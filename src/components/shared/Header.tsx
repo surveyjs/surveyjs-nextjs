@@ -36,6 +36,46 @@ export default function Header() {
           >
             {"Survey"}
           </Link>
+          <Link
+            className="text-base underline hover:no-underline"
+            key={3}
+            href={{pathname: "/creator"}}
+            prefetch={false}
+          >
+            {"Creator"}
+          </Link>
+          <Link
+            className="text-base underline hover:no-underline"
+            key={4}
+            href={{pathname: "/dashboard"}}
+            prefetch={false}
+          >
+            {"Dashboard"}
+          </Link>
+          <Link
+            className="text-base underline hover:no-underline"
+            key={5}
+            href={{pathname: "/datatables"}}
+            prefetch={false}
+          >
+            {"Datatables"}
+          </Link>
+          <Link
+            className="text-base underline hover:no-underline"
+            key={6}
+            href={{pathname: "/tabulator"}}
+            prefetch={false}
+          >
+            {"Tabulator"}
+          </Link>
+          <Link
+            className="text-base underline hover:no-underline"
+            key={7}
+            href={{pathname: "/pdf-export"}}
+            prefetch={false}
+          >
+            {"Export To PDF"}
+          </Link>
       </nav>
     </header>
   )
