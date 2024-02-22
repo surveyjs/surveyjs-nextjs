@@ -1,54 +1,95 @@
 export const json = {
-  completedHtml: "<h3>Thank you for your feedback</h3> <h5>Your thoughts and ideas will help us improve our product.</h5>",
-  completedHtmlOnCondition: [{
-    expression: "{nps_score} > 8",
-    html: "<h3>Thank you for your feedback</h3> <h5>We are glad that you love our product. Your ideas and suggestions will help us make it even better.</h5>"
-  }, {
-    expression: "{nps_score} < 7",
-    html: "<h3>Thank you for your feedback</h3> <h5>We are glad that you shared your ideas with us. They will help us make our product better.</h5>"
-  }],
+  title: "Product Feedback Survey",
+  showProgressBar: "top",
   pages: [{
-    name: "page1",
     elements: [{
-      type: "rating",
-      name: "nps_score",
-      title: "On a scale of zero to ten, how likely are you to recommend our product to a friend or colleague?",
-      isRequired: true,
-      rateMin: 0,
-      rateMax: 10,
-      minRateDescription: "(Most unlikely)",
-      maxRateDescription: "(Most likely)"
-    }, {
-      type: "checkbox",
-      name: "promoter_features",
-      visibleIf: "{nps_score} >= 9",
-      title: "Which of the following features do you value the most?",
-      isRequired: true,
-      validators: [{
-        type: "answercount",
-        text: "Please select two features maximum.",
-        maxCount: 2
+      type: "matrix",
+      name: "Quality",
+      title: "Please indicate if you agree or disagree with the following statements",
+      columns: [{
+        value: 1,
+        text: "Strongly disagree"
+      }, {
+        value: 2,
+        text: "Disagree"
+      }, {
+        value: 3,
+        text: "Neutral"
+      }, {
+        value: 4,
+        text: "Agree"
+      }, {
+        value: 5,
+        text: "Strongly agree"
       }],
-      hasOther: true,
-      choices: [
-        "Performance",
-        "Stability",
-        "User Interface",
-        "Complete Functionality"
-      ],
-      otherText: "Other features:",
-      colCount: 2
+      rows: [{
+        value: "affordable",
+        text: "Product is affordable"
+      }, {
+        value: "does what it claims",
+        text: "Product does what it claims"
+      }, {
+        value: "better then others",
+        text: "Product is better than other products on the market"
+      }, {
+        value: "easy to use",
+        text: "Product is easy to use"
+      }]
+    }, {
+      type: "rating",
+      name: "satisfaction",
+      title: "How satisfied are you with the product?",
+      mininumRateDescription: "Not satisfied",
+      maximumRateDescription: "Completely satisfied"
+    }, {
+      type: "rating",
+      name: "recommend friends",
+      visibleIf: "{satisfaction} > 3",
+      title: "How likely are you to recommend the product to a friend or colleague?",
+      mininumRateDescription: "Won't recommend",
+      maximumRateDescription: "Will recommend"
     }, {
       type: "comment",
-      name: "passive_experience",
-      visibleIf: "{nps_score} > 6  and {nps_score} < 9",
-      title: "What is the primary reason for your score?"
-    }, {
-      type: "comment",
-      name: "disappointed_experience",
-      visibleIf: "{nps_score} notempty",
-      title: "What do you miss and find disappointing in your experience with our product?"
+      name: "suggestions",
+      title: "What would make you more satisfied with the product?"
     }]
-  }],
-  showQuestionNumbers: "off"
+  }, {
+    elements: [{
+      type: "radiogroup",
+      name: "price to competitors",
+      title: "Compared to our competitors, do you feel the product is",
+      choices: [
+        "Less expensive",
+        "Priced about the same",
+        "More expensive",
+        "Not sure"
+      ]
+    }, {
+      type: "radiogroup",
+      name: "price",
+      title: "Do you feel our current price is merited by our product?",
+      choices: [
+        "correct|Yes, the price is about right",
+        "low|No, the price is too low",
+        "high|No, the price is too high"
+      ]
+    }, {
+      type: "multipletext",
+      name: "pricelimit",
+      title: "What is the... ",
+      items: [{
+        name: "mostamount",
+        title: "Most amount you would pay for a product like ours"
+      }, {
+        name: "leastamount",
+        title: "The least amount you would feel comfortable paying"
+      }]
+    }]
+  }, {
+    elements: [{
+      type: "text",
+      name: "email",
+      title: 'Thank you for taking our survey. Please enter your email address and press the "Submit" button.'
+    }]
+  }]
 };

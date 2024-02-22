@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { data, json } from "../../data/analytics_data";
+import { data, json } from "../../data/dashboard_data";
 
 import jsPDF from "jspdf";
 // import * as XLSX from "xlsx";
@@ -15,7 +15,7 @@ import "tabulator-tables/dist/css/tabulator.min.css";
 (window as any)["jsPDF"] = jsPDF;
 // (window as any)["XLSX"] = XLSX;
 
-export default function SurveyAnalyticsTabulator() {
+export default function DashboardTabulator() {
   let [vizPanel, setVizPanel] = useState<Tabulator>();
 
   if (!vizPanel) {

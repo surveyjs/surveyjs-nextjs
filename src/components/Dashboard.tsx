@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { data, json } from "../../data/analytics_data";
+import { data, json } from "../../data/dashboard_data";
 import { VisualizationPanel, VisualizationManager, WordCloud } from "survey-analytics";
 import "survey-analytics/survey.analytics.css";
 import { Model } from "survey-core";
@@ -10,7 +10,7 @@ import { Model } from "survey-core";
 
 VisualizationManager.unregisterVisualizerForAll(WordCloud);
 
-export default function SurveyAnalytics() {
+export default function Dashboard() {
   let [vizPanel, setVizPanel] = useState<VisualizationPanel>();
 
   if (!vizPanel) {

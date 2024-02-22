@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
-import { data, json } from "../../data/analytics_data";
+import { data, json } from "../../data/dashboard_data";
 import { DataTables } from "survey-analytics/survey.analytics.datatables.js";
 import { Model } from "survey-core";
 import $ from "jquery";
@@ -15,7 +15,7 @@ import "datatables.net-rowgroup/js/dataTables.rowGroup.js";
 import "datatables.net-colreorder-dt/css/colReorder.dataTables.css";
 import "survey-analytics/survey.analytics.datatables.css";
 
-export default function SurveyAnalyticsDatatables() {
+export default function DashboardDatatables() {
   let [vizPanel, setVizPanel] = useState<DataTables>();
 
   if (!vizPanel) {
