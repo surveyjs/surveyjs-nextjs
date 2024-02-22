@@ -11,17 +11,17 @@ import { Model } from "survey-core";
 VisualizationManager.unregisterVisualizerForAll(WordCloud);
 
 export default function SurveyAnalytics() {
-  let [visPanel, setVisPanel] = useState<VisualizationPanel>();
+  let [vizPanel, setVizPanel] = useState<VisualizationPanel>();
 
-  if (visPanel === undefined) {
+  if (!vizPanel) {
     const survey = new Model(json);
-    visPanel = new VisualizationPanel(survey.getAllQuestions(), data);
-    setVisPanel(visPanel);
+    vizPanel = new VisualizationPanel(survey.getAllQuestions(), data);
+    setVizPanel(vizPanel);
   }
 
   useEffect(() => {
-    visPanel && visPanel.render(document.getElementById("summaryContainer") as any);
-  });
+    vizPanel?.render("surveyVizPanel");
+  }, [vizPanel]);
 
-  return <div id="summaryContainer"></div>;
+  return <div id="surveyVizPanel"></div>;
 }
