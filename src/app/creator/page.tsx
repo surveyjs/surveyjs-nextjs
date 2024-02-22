@@ -7,7 +7,7 @@ import SurveyCreatorComponent from "@/components/SurveyCreator";
 export default function SurveyCreator() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-between p-24">
-      <SurveyCreatorComponent/>
+      <SurveyCreatorComponent />
     </div>
   );
 }

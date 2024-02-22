@@ -34,7 +34,7 @@ export default function Header() {
             href={{pathname: "/survey"}}
             prefetch={false}
           >
-            {"Survey"}
+            {"Form Library"}
           </Link>
           <Link
             className="text-base underline hover:no-underline"
@@ -42,7 +42,7 @@ export default function Header() {
             href={{pathname: "/creator"}}
             prefetch={false}
           >
-            {"Creator"}
+            {"Survey Creator"}
           </Link>
           <Link
             className="text-base underline hover:no-underline"
@@ -54,19 +54,19 @@ export default function Header() {
           </Link>
           <Link
             className="text-base underline hover:no-underline"
-            key={5}
-            href={{pathname: "/datatables"}}
-            prefetch={false}
-          >
-            {"Datatables"}
-          </Link>
-          <Link
-            className="text-base underline hover:no-underline"
             key={6}
             href={{pathname: "/tabulator"}}
             prefetch={false}
           >
-            {"Tabulator"}
+            {"Results Table"}
+          </Link>
+          <Link
+            className="text-base underline hover:no-underline"
+            key={5}
+            href={{pathname: "/datatables"}}
+            prefetch={false}
+          >
+            {"Results Table (IE Support)"}
           </Link>
           <Link
             className="text-base underline hover:no-underline"
@@ -74,7 +74,7 @@ export default function Header() {
             href={{pathname: "/pdf-export"}}
             prefetch={false}
           >
-            {"Export To PDF"}
+            {"PDF Generator"}
           </Link>
       </nav>
     </header>
