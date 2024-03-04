@@ -8,7 +8,7 @@ import { Model } from "survey-core";
 // const WordCloud = require("wordcloud");
 // (window as any)["WordCloud"] = WordCloud;
 
-VisualizationManager.unregisterVisualizerForAll(WordCloud);
+// VisualizationManager.unregisterVisualizerForAll(WordCloud);
 
 export default function Dashboard() {
   let [vizPanel, setVizPanel] = useState<VisualizationPanel>();
@@ -21,7 +21,10 @@ export default function Dashboard() {
 
   useEffect(() => {
     vizPanel?.render("surveyVizPanel");
+    return () => {
+      vizPanel?.clear();
+    }
   }, [vizPanel]);
 
-  return <div id="surveyVizPanel"></div>;
+  return <div id="surveyVizPanel" style={{"margin": "auto", "width": "100%", "maxWidth": "1400px"}}></div>;
 }
