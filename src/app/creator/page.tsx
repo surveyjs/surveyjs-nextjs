@@ -1,8 +1,8 @@
-import SurveyCreatorComponent from "@/components/SurveyCreator";
+import dynamic from "next/dynamic";
 
-// import dynamic from 'next/dynamic';
-// const SurveyComponent = dynamic(() => import("@/components/Survey"), { ssr: false });
-
+const SurveyCreatorComponent = dynamic(() => import('@/components/SurveyCreator'), {
+  ssr: false,
+})
 
 export default function SurveyCreator() {
   return (

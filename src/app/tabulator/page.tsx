@@ -1,4 +1,8 @@
-import DashboardTabulator from "@/components/DashboardTabulator";
+import dynamic from "next/dynamic";
+
+const DashboardTabulator = dynamic(() => import('@/components/DashboardTabulator'), {
+  ssr: false,
+})
 
 export default function SurveyTabulator() {
   return (

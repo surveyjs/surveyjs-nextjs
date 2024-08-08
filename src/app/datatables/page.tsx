@@ -1,4 +1,8 @@
-import DashboardDatatables from "@/components/DashboardDatatables";
+import dynamic from "next/dynamic";
+
+const DashboardDatatables = dynamic(() => import('@/components/DashboardDatatables'), {
+  ssr: false,
+})
 
 export default function SurveyDatatables() {
   return (
