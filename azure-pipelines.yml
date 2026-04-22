@@ -1,0 +1,138 @@
+# SurveyJS NextJS - CI Pipeline
+# Downloads SurveyJS build artifacts and runs tests against them
+
+resources:
+  pipelines:
+    - pipeline: LibraryMain
+      source: Library Main
+      trigger: none
+    - pipeline: CreatorMain
+      source: Creator Main
+      trigger: none
+    - pipeline: AnalyticsMain
+      source: Analytics Main
+      trigger: none
+    - pipeline: PDFMain
+      source: PDF Main
+      trigger: none
+
+variables:
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+
+pr: none
+
+pool:
+  vmImage: "ubuntu-latest"
+
+jobs:
+  - job: CI
+    displayName: "Build & E2E Tests"
+    steps:
+      - checkout: self
+        clean: true
+
+      - task: NodeTool@0
+        inputs:
+          versionSpec: "24.x"
+        displayName: "Install Node.js"
+
+      - task: Npm@1
+        displayName: "npm install"
+        inputs:
+          command: install
+          verbose: false
+
+      # Download artifacts
+      - download: LibraryMain
+        artifact: SurveyJSLibraryBuildCore
+      - download: LibraryMain
+        artifact: SurveyJSLibraryBuildReact
+      - download: CreatorMain
+        artifact: SurveyJSCreatorV2BuildCore
+      - download: CreatorMain
+        artifact: SurveyJSCreatorV2BuildReact
+      - download: AnalyticsMain
+        artifact: SurveyJSAnalyticsBuild
+      - download: PDFMain
+        artifact: SurveyjsPDFbuild
+
+      # Copy artifacts to node_modules
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: "$(Pipeline.Workspace)/LibraryMain/SurveyJSLibraryBuildCore/packages/survey-core"
+          Contents: "**"
+          TargetFolder: "$(Build.SourcesDirectory)/node_modules/survey-core"
+          OverWrite: true
+        displayName: "Copy survey-core"
+
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: "$(Pipeline.Workspace)/LibraryMain/SurveyJSLibraryBuildReact/packages/survey-react-ui"
+          Contents: "**"
+          TargetFolder: "$(Build.SourcesDirectory)/node_modules/survey-react-ui"
+          OverWrite: true
+        displayName: "Copy survey-react-ui"
+
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: "$(Pipeline.Workspace)/CreatorMain/SurveyJSCreatorV2BuildCore"
+          Contents: "**"
+          TargetFolder: "$(Build.SourcesDirectory)/node_modules/survey-creator-core"
+          OverWrite: true
+        displayName: "Copy survey-creator-core"
+
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: "$(Pipeline.Workspace)/CreatorMain/SurveyJSCreatorV2BuildReact"
+          Contents: "**"
+          TargetFolder: "$(Build.SourcesDirectory)/node_modules/survey-creator-react"
+          OverWrite: true
+        displayName: "Copy survey-creator-react"
+
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: "$(Pipeline.Workspace)/AnalyticsMain/SurveyJSAnalyticsBuild/packages/survey-analytics"
+          Contents: "**"
+          TargetFolder: "$(Build.SourcesDirectory)/node_modules/survey-analytics"
+          OverWrite: true
+        displayName: "Copy survey-analytics"
+
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: "$(Pipeline.Workspace)/PDFMain/SurveyjsPDFbuild/packages/survey-pdf"
+          Contents: "**"
+          TargetFolder: "$(Build.SourcesDirectory)/node_modules/survey-pdf"
+          OverWrite: true
+        displayName: "Copy survey-pdf"
+
+      # Build
+      - script: |
+          npm run build
+        displayName: "Build NextJS app"
+
+      # E2E tests
+      - script: |
+          npm run e2e:ci
+        displayName: "Run Playwright E2E tests"
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: "JUnit"
+          testResultsFiles: "$(Build.SourcesDirectory)/test-results/e2e-junit-results.xml"
+          testRunTitle: "Playwright E2E Tests"
+        condition: succeededOrFailed()
+        displayName: "Publish Playwright test results"
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: "$(Build.SourcesDirectory)/test-results"
+          ArtifactName: "E2E-Test-Results"
+          publishLocation: "Container"
+        condition: failed()
+        displayName: "Publish test artifacts on failure"

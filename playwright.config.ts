@@ -9,6 +9,7 @@ export default defineConfig({
   reporter: [
     ["list"],
     ["html", { open: "never" }],
+    ["junit", { outputFile: "test-results/e2e-junit-results.xml" }],
   ],
   use: {
     baseURL: "http://localhost:3000",
