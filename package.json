@@ -6,9 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "npm run build",
+    "e2e:ci": "npx playwright test",
+    "e2e:ui": "npx playwright test --ui",
+    "postinstall": "playwright install chromium"
   },
   "dependencies": {
+    "ace-builds": "^1.43.6",
     "jspdf-autotable": "^3.8.2",
     "next": "14.1.0",
     "react": "^18",
@@ -19,10 +24,10 @@
     "survey-creator-react": "latest",
     "survey-pdf": "latest",
     "survey-react-ui": "latest",
-    "ace-builds": "latest",
     "wordcloud": "^1.2.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.59.1",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
