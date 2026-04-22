@@ -5,16 +5,16 @@ resources:
   pipelines:
     - pipeline: LibraryMain
       source: Library Main
-      trigger: none
+      trigger: true
     - pipeline: CreatorMain
       source: Creator Main
-      trigger: none
+      trigger: true
     - pipeline: AnalyticsMain
       source: Analytics Main
-      trigger: none
+      trigger: true
     - pipeline: PDFMain
       source: PDF Main
-      trigger: none
+      trigger: true
 
 variables:
   npm_config_cache: $(Pipeline.Workspace)/.npm
