@@ -28,7 +28,7 @@ trigger:
 pr: none
 
 pool:
-  vmImage: "ubuntu-latest"
+  vmImage: "main-selfhosted"
 
 jobs:
   - job: CI
