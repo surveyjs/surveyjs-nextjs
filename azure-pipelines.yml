@@ -28,7 +28,7 @@ trigger:
 pr: none
 
 pool:
-  vmImage: "main-selfhosted"
+  name: main-selfhosted
 
 jobs:
   - job: CI
