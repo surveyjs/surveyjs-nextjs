@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Home renders correctly with snapshot 1`] = `
+<div
+  class="flex min-h-screen flex-col items-center p-8"
+>
+  Home
+</div>
+`;
