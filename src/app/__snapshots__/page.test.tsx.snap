@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Homepage matches the snapshot 1`] = `
+<div
+  class="flex min-h-screen flex-col items-center p-24"
+>
+  <h1
+    class="mb-12 text-3xl font-bold tracking-tight md:text-xl xl:text-2xl"
+  >
+    SurveyJS + NextJS Quickstart Template
+  </h1>
+  <div
+    class="text-lg text-neutral-500 dark:text-neutral-300"
+  >
+    <p>
+      SurveyJS is a set of JavaScript components that allow you and your users to build surveys / forms, store them in your database, and visualize survey results for data analysis. This quick start template uses the following SurveyJS components:
+    </p>
+    <ul>
+      <li>
+        <a
+          href="https://surveyjs.io/Documentation/Library?id=LibraryOverview"
+          style="text-decoration: underline;"
+          target="_blank"
+        >
+          SurveyJS Form Library
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://surveyjs.io/Documentation/Survey-Creator?id=Survey-Creator-Overview"
+          style="text-decoration: underline;"
+          target="_blank"
+        >
+          Survey Creator / Form Builder
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://surveyjs.io/Documentation/Analytics?id=AnalyticsOverview"
+          style="text-decoration: underline;"
+          target="_blank"
+        >
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a
+          href="https://surveyjs.io/Documentation/Pdf-Export?id=PdfExportOverview"
+          style="text-decoration: underline;"
+          target="_blank"
+        >
+          PDF Generator
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+`;
