@@ -17,12 +17,7 @@ test("creator page loads successfully", async ({ page }) => {
 
 test("dashboard page loads successfully", async ({ page }) => {
   await page.goto("/dashboard");
-  await expect(page.locator("#surveyVizPanel").first()).toBeVisible();
-});
-
-test("tabulator page loads successfully", async ({ page }) => {
-  await page.goto("/tabulator");
-  await expect(page.locator("#summaryContainer").first()).toBeVisible();
+  await expect(page.locator("#surveyDashboard").first()).toBeVisible();
 });
 
 test("pdf-export page loads successfully", async ({ page }) => {
@@ -41,7 +36,6 @@ const routes = [
   "/survey",
   "/creator",
   "/dashboard",
-  "/tabulator",
   "/pdf-export",
 ];
 
@@ -51,8 +45,20 @@ for (const route of routes) {
     page.on("pageerror", (error) => {
       errors.push(error.message);
     });
+    // Hydration mismatches are reported through console.error, not as an
+    // uncaught exception, so pageerror alone never sees them.
+    page.on("console", (message) => {
+      if (message.type() === "error") {
+        errors.push(message.text());
+      }
+    });
 
-    await page.goto(route);
+    // A full document load: this is the request that runs the server render.
+    // Without the status check a failed SSR still looks fine, because React
+    // recovers on the client and paints the page anyway.
+    const response = await page.goto(route);
+    expect(response?.status()).toBe(200);
+
     await page.waitForLoadState("networkidle");
 
     expect(errors).toHaveLength(0);

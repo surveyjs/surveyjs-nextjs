@@ -1,0 +1,15 @@
+/**
+ * App-local SurveyJS overrides for this theme.
+ *
+ * Place CSS here that adapts SurveyJS to custom app components that have no
+ * counterpart in the framework's stock design system. The SurveyJS adapter
+ * cannot cover those; this stylesheet loads AFTER the adapter so overrides win.
+ *
+ * Prefer `--sjs2-*` token overrides on `.sjs-theme-overrides` when possible;
+ * use SurveyJS class selectors only when tokens are not enough.
+ */
+
+.sjs-theme-overrides {
+  /* FieldGroup `gap-5` — the gap the native column puts between questions. */
+  --sjs2-layout-component-page-content-area-gap-vertical: calc(var(--spacing) * 5);
+}

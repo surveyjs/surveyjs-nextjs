@@ -1,0 +1,126 @@
+/**
+ * App-local SurveyJS overrides shared across every shadcn visual style.
+ *
+ * Always loaded after the SurveyJS adapter so these rules win by source order.
+ * Style-specific tweaks stay in `/survey-overrides/<style-id>.css`.
+ *
+ * Prefer `--sjs2-*` token overrides on `.sjs-theme-overrides` when possible;
+ * use SurveyJS class selectors only when tokens are not enough.
+ */
+
+.sjs-theme-overrides {
+  /* Circular step markers — see the stepper section below. */
+  --sjs2-radius-component-stepper-item: 100%;
+
+  --sjs2-layout-component-survey-header-gap-vertical:  calc(var(--spacing) * 1.5);
+  --sjs2-layout-component-survey-description-padding-bottom: calc(var(--spacing) * 6);
+
+  --sjs2-layout-component-survey-header-padding-top: 0px;
+  --sjs2-layout-component-survey-header-padding-horizontal: calc(var(--spacing) * 6);
+  
+
+  --sjs2-typography-font-size-component-survey-header-title: var(--text-2xl);
+  --sjs2-typography-line-height-component-survey-header-title: 1;
+
+  --sjs2-typography-font-size-component-survey-header-description: var(--text-sm);
+  --sjs2-typography-line-height-component-survey-header-description: var(--text-sm--line-height);
+
+  --sjs2-layout-component-survey-box-padding-top: calc(var(--spacing) * 6);
+  --sjs2-layout-component-survey-box-padding-bottom: calc(var(--spacing) * 6);
+  --sjs2-layout-component-survey-box-gap-vertical: calc(var(--spacing) * 6);
+
+  /* Page layout mirrors NativeControls, which is shared by every visual style:
+     the `p-6` box and the `grid gap-4 sm:grid-cols-2` rows. The vertical gap
+     BETWEEN questions comes from the vendored FieldGroup instead, so it lives
+     in `/survey-overrides/<style>.css`. */
+  --sjs2-layout-component-page-header-gap-vertical: 0;
+  --sjs2-layout-component-page-header-padding-horizontal: calc(var(--spacing) * 6);
+  --sjs2-layout-component-page-box-gap-vertical: calc(var(--spacing) * 6);
+  --sjs2-layout-component-page-content-area-padding-horizontal: calc(var(--spacing) * 6);
+  --sjs2-layout-component-page-content-area-gap-horizontal: calc(var(--spacing) * 4);
+
+  --sjs2-layout-component-survey-footer-padding-horizontal: calc(var(--spacing) * 6);
+  --sjs2-layout-component-survey-footer-action-group-gap: calc(var(--spacing) * 3);
+}
+
+/* ── stepper ──────────────────────────────────────────────────────────────
+   The shadcn registry has no stepper, so there is nothing for the SurveyJS
+   adapter to imitate: the native column's wizard is hand-built here (see
+   `src/components/ui/stepper.tsx`, which the CLI never touches). Everything
+   below matches the SurveyJS progress bar to that app-owned widget — the
+   2.25rem `--stepper-indicator-size` circles with `shadow-sm`, and
+   `text-sm/medium text-muted-foreground` titles underneath. */
+.sd-progress-buttons {
+  padding: 0 calc(var(--spacing) * 6) calc(var(--spacing) * 2);
+}
+
+.sd-progress-buttons--titles-bottom .sd-progress-buttons__button {
+  margin-bottom: calc(var(--spacing) * 1);
+  margin-top: 0;
+}
+
+.sd-progress-buttons__page-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+  color: var(--muted-foreground);
+}
+
+.sd-progress-buttons__list li:first-child,
+.sd-progress-buttons__list li:last-child {
+  align-items: center;
+}
+
+.sd-progress-buttons--titles-bottom .sd-progress-buttons__list-container {
+  padding-top: 0;
+}
+
+.sd-progress-buttons--numbered .sd-progress-buttons__button {
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  width: 2.25rem;
+  height: 2.25rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.sd-progress-buttons--numbered.sd-progress-buttons--titles-bottom .sd-progress-buttons__list li:after {
+  top: 1.125rem;
+  bottom: unset;
+}
+
+.sd-progress-buttons--numbered .sd-progress-buttons__list li::after,
+.sd-progress-buttons--numbered .sd-progress-buttons__list li:nth-child(2):not(:last-child)::after,
+.sd-progress-buttons--numbered .sd-progress-buttons__list li:nth-child(n + 3):last-child::after {
+  width: calc(100% - 2.25em);
+  right: calc(50% + 1.125em);
+}
+
+/* ── responsive ───────────────────────────────────────────────────────────
+   SurveyJS' own mobile mode is off, so the survey follows the same Tailwind
+   breakpoints as the rest of this app. The native column lays its fields out
+   with `grid gap-4 sm:grid-cols-2`, i.e. two columns from `sm` up; these
+   rules make the SurveyJS rows collapse at the same point. Which breakpoint
+   to pick is an app decision, so it is not part of the adapter.
+
+   The `--sd-mobile-width: 0px` that switches the mobile mode off is NOT here:
+   survey-core reads it at mount, before this sheet is guaranteed to be
+   applied, so it lives in src/app/globals.css. */
+
+/* below sm — phones */
+@media (width < 640px) {
+  .sd-row.sd-row--multiple {
+    flex-direction: column;
+  }
+}
+
+/* below md — tablets */
+@media (width < 768px) {
+}
+
+/* below lg — small desktops */
+@media (width < 1024px) {
+}
+
+/* 2xl and up — large desktops */
+@media (width >= 1536px) {
+}

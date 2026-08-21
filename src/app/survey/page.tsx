@@ -1,10 +1,10 @@
-import dynamic from 'next/dynamic';
-const SurveyComponent = dynamic(() => import("@/components/Survey"), { ssr: false });
+'use client'
 
+import SurveyComponent from "@/components/Survey";
 
 export default function Survey() {
   return (
-    <div className="flex min-h-screen flex-col items-center p-8">
+    <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:px-6 lg:py-8">
       <SurveyComponent />
     </div>
   );

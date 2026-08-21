@@ -1,3 +1,5 @@
+'use client'
+
 export default function Homepage() {
   return (
     <div className="flex min-h-screen flex-col items-center p-24">
