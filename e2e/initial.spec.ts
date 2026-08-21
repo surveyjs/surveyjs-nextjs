@@ -1,46 +1,70 @@
 import { test, expect } from "@playwright/test";
 
-test("homepage has correct title", async ({ page }) => {
+const surveyRoutes = ["/claims", "/checkout"];
+const allRoutes = [
+  "/",
+  ...surveyRoutes,
+  "/records",
+  "/claims/configure",
+  "/checkout/configure",
+  "/records/configure",
+];
+
+test("root redirects to the first survey", async ({ page }) => {
   await page.goto("/");
+  await expect(page).toHaveURL(/\/claims$/);
   await expect(page).toHaveTitle(/SurveyJS/i);
 });
 
-test("survey page loads successfully", async ({ page }) => {
-  await page.goto("/survey");
+for (const route of surveyRoutes) {
+  test(`${route} is rendered on the server`, async ({ page }) => {
+    // Read the raw document — the survey markup must be in the HTML the
+    // server sent, before any JavaScript runs.
+    const response = await page.goto(route);
+    expect(response?.status()).toBe(200);
+    expect(await response!.text()).toContain("sd-root-modern");
+    await expect(page.locator(".sd-root-modern").first()).toBeVisible();
+  });
+}
+
+test("/records renders the table and the SurveyJS editor", async ({ page }) => {
+  await page.goto("/records");
+  await expect(page.getByRole("table")).toBeVisible();
+  await page.getByRole("button", { name: "Edit" }).first().click();
   await expect(page.locator(".sd-root-modern").first()).toBeVisible();
 });
 
-test("creator page loads successfully", async ({ page }) => {
-  await page.goto("/creator");
-  await expect(page.locator(".svc-creator").first()).toBeVisible();
+test("editing the JSON changes what the server renders", async ({ page }) => {
+  await page.goto("/claims/configure");
+
+  const editor = page.locator(".monaco-editor").first();
+  await expect(editor).toBeVisible();
+
+  // Replace the whole document with a minimal survey, then save.
+  await page.evaluate((source) => {
+    const monaco = (window as unknown as { monaco: typeof import("monaco-editor") })
+      .monaco;
+    monaco.editor.getModels()[0].setValue(source);
+  }, JSON.stringify({
+    title: "Edited by the e2e test",
+    elements: [{ type: "text", name: "q1", title: "A brand new question" }],
+  }, null, 2));
+
+  await page.getByRole("button", { name: /Save & render on server/ }).click();
+  await expect(page).toHaveURL(/\/claims$/);
+
+  // Reload so the assertion runs against a fresh server render, not the
+  // client-side navigation result.
+  const response = await page.reload();
+  expect(await response!.text()).toContain("A brand new question");
+
+  await page.goto("/claims/configure");
+  await page.getByRole("button", { name: "Reset" }).click();
+  await expect(page.getByText("Custom JSON")).toHaveCount(0);
 });
 
-test("dashboard page loads successfully", async ({ page }) => {
-  await page.goto("/dashboard");
-  await expect(page.locator("#surveyDashboard").first()).toBeVisible();
-});
-
-test("pdf-export page loads successfully", async ({ page }) => {
-  await page.goto("/pdf-export");
-  await expect(page.getByText("SurveyJS PDF Generator").first()).toBeVisible();
-});
-
-test("home page loads successfully", async ({ page }) => {
-  await page.goto("/home");
-  await expect(page.getByText("Home").first()).toBeVisible();
-});
-
-const routes = [
-  "/",
-  "/home",
-  "/survey",
-  "/creator",
-  "/dashboard",
-  "/pdf-export",
-];
-
-for (const route of routes) {
-  test(`no JS errors on ${route}`, async ({ page }) => {
+for (const route of allRoutes) {
+  test(`no SSR failure or hydration mismatch on ${route}`, async ({ page }) => {
     const errors: string[] = [];
     page.on("pageerror", (error) => {
       errors.push(error.message);

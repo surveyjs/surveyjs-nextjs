@@ -1,3 +1,4 @@
+import type { SchemaDefinition, SurveyJSON } from "./types";
 
 /**
  * Patient intake / medical-insurance form.
@@ -8,7 +9,7 @@
  *
  * Representative V3 JSON — drop-in replaceable with a real patient-intake schema.
  */
-export const json = {
+export const medicalFormJson: SurveyJSON = {
   headerView: "advanced",
   title: "Patient Intake (SurveyJS)",
   description: "Tell us about you and your insurance coverage.",
@@ -265,4 +266,12 @@ export const json = {
     },
   ],
   completedHtml: "<h4>Thank you. Your intake form has been submitted.</h4>",
+};
+
+export const medicalFormSchema: SchemaDefinition = {
+  id: "medical-form",
+  title: "Patient Intake",
+  description:
+    "Multi-step medical/insurance intake with coverage panels, history matrix and consent.",
+  json: medicalFormJson,
 };

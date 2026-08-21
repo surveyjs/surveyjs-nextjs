@@ -1,3 +1,4 @@
+import type { SurveyData } from "../types";
 
 /**
  * Demo "prefill" data for the Patient Intake form (`medicalFormJson`).
@@ -9,7 +10,7 @@
  * answers. Renderer-agnostic: depends on nothing but `SurveyData`.
  *
  */
-export const sample = {
+export const medicalFormSample: SurveyData = {
   // Patient
   firstName: "Jordan",
   lastName: "Avery",
