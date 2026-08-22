@@ -3,7 +3,7 @@
 import "@/lib/survey-ssr-environment";
 import { useEffect, useMemo, useState } from "react";
 import { Survey } from "survey-react-ui";
-import type { Question } from "survey-core";
+import type { Model, Question } from "survey-core";
 import {
   createSurveyModel,
   type SchemaInput,
@@ -25,6 +25,7 @@ export function SurveyForm({
   completedMessage = "Thank you. Your response has been submitted.",
   prefillData,
   prefillLabel = "Prefill demo data",
+  onModelReady,
 }: {
   schema: SchemaInput;
   data?: SurveyData;
@@ -33,11 +34,16 @@ export function SurveyForm({
   completedMessage?: string;
   prefillData?: SurveyData;
   prefillLabel?: string;
+  onModelReady?: (model: Model) => void;
 }) {
   const model = useMemo(
     () => createSurveyModel(schema, { data, mode }),
     [schema, data, mode],
   );
+
+  useEffect(() => {
+    onModelReady?.(model);
+  }, [model, onModelReady]);
 
   useEffect(() => {
     if (!prefillData) return;

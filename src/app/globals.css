@@ -140,6 +140,13 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Tailwind v4 drops the browser default; put it back so every control reads
+     as clickable. */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 

@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
+import type { Model } from "survey-core";
 import {
   insuranceClaimSeed,
   type ClaimRecord,
@@ -72,6 +73,7 @@ export function RecordsView({ schema }: { schema: SurveyJSON }) {
       : null;
   });
   const [deleteTarget, setDeleteTarget] = useState<ClaimRecord | null>(null);
+  const [model, setModel] = useState<Model | null>(null);
 
   const open = useCallback(
     (mode: EditorMode, record: ClaimRecord) =>
@@ -97,15 +99,25 @@ export function RecordsView({ schema }: { schema: SurveyJSON }) {
 
   const confirmDelete = useCallback(() => {
     if (!deleteTarget) return;
-    setRecords((prev) => prev.filter((r) => r.id !== deleteTarget.id));
-    setEditor((prev) => (prev?.record?.id === deleteTarget.id ? null : prev));
+    const remaining = records.filter((r) => r.id !== deleteTarget.id);
+    setRecords(remaining);
+    // The form is always open on some record, so deleting the open one falls
+    // back to whatever is left.
+    setEditor((prev) => {
+      if (prev?.record.id !== deleteTarget.id) return prev;
+      const next = remaining[0];
+      return next
+        ? { mode: "view", record: next, key: (prev?.key ?? 0) + 1 }
+        : null;
+    });
     setDeleteTarget(null);
-  }, [deleteTarget]);
+  }, [deleteTarget, records]);
 
-  const editorTitle = useMemo(() => {
-    if (!editor) return "Form";
-    return `${editor.mode === "edit" ? "Edit" : "View"} ${editor.record.id}`;
-  }, [editor]);
+  const editorTitle = useMemo(
+    () =>
+      editor ? `${editor.mode === "edit" ? "Edit" : "View"} ${editor.record.id}` : "",
+    [editor],
+  );
 
   return (
     <>
@@ -139,6 +151,8 @@ export function RecordsView({ schema }: { schema: SurveyJSON }) {
                   <TableRow
                     key={record.id}
                     data-state={active ? "selected" : undefined}
+                    className="cursor-pointer"
+                    onClick={() => open("view", record)}
                   >
                     <TableCell className="font-mono">{record.id}</TableCell>
                     <TableCell>{claimantName(record.data)}</TableCell>
@@ -166,25 +180,21 @@ export function RecordsView({ schema }: { schema: SurveyJSON }) {
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => open("view", record)}
-                        >
-                          View
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => open("edit", record)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            open("edit", record);
+                          }}
                         >
                           Edit
-                        </Button>
-                        <Button size="sm" variant="ghost" asChild>
-                          <Link href="/records/configure">Config</Link>
                         </Button>
                         <Button
                           size="sm"
                           variant="ghost"
                           className="text-destructive hover:text-destructive"
-                          onClick={() => setDeleteTarget(record)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setDeleteTarget(record);
+                          }}
                         >
                           Delete
                         </Button>
@@ -197,42 +207,41 @@ export function RecordsView({ schema }: { schema: SurveyJSON }) {
           </Table>
         </Card>
 
-        <div className="lg:sticky lg:top-20">
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <h2 className="text-base font-semibold">{editorTitle}</h2>
-            {editor && (
+        {editor && (
+          <div className="lg:sticky lg:top-20">
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <h2 className="text-base font-semibold">{editorTitle}</h2>
               <div className="flex gap-2">
-                {editor.mode === "view" && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => open("edit", editor.record)}
-                  >
-                    Edit
+                {editor.mode === "view" ? (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => open("edit", editor.record)}
+                    >
+                      Edit
+                    </Button>
+                    <Button size="sm" variant="ghost" asChild>
+                      <Link href="/records/configure">Configure Survey JSON</Link>
+                    </Button>
+                  </>
+                ) : (
+                  <Button size="sm" onClick={() => model?.completeLastPage()}>
+                    Save changes
                   </Button>
                 )}
-                <Button size="sm" variant="ghost" onClick={() => setEditor(null)}>
-                  Close
-                </Button>
               </div>
-            )}
-          </div>
-          {editor ? (
+            </div>
             <SurveyForm
               key={editor.key}
               schema={schema}
               data={editor.record.data}
               mode={editor.mode === "view" ? "display" : "edit"}
               onComplete={editor.mode === "view" ? undefined : handleComplete}
+              onModelReady={setModel}
             />
-          ) : (
-            <div className="border p-6">
-              <p className="text-muted-foreground py-6 text-center">
-                Select a record to view or edit.
-              </p>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       <Dialog

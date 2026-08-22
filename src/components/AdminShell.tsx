@@ -3,7 +3,7 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MenuIcon, LayersIcon } from "lucide-react";
+import { ArrowUpRightIcon, LayersIcon, MenuIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -19,16 +19,31 @@ const SIDEBAR_WIDTH = "17rem";
 
 function Brand() {
   return (
-    <div className="flex items-center gap-2">
-      <Link href="/" className="flex items-center gap-2 text-inherit hover:underline">
-        <span className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-md">
+    <div className="flex min-w-0 items-center gap-2 overflow-hidden lg:gap-4">
+      <Link
+        href="/"
+        className="flex min-w-0 items-center gap-2 text-inherit hover:underline"
+      >
+        <span className="bg-primary text-primary-foreground flex size-8 shrink-0 items-center justify-center rounded-md">
           <LayersIcon className="size-4" />
         </span>
-        <span className="text-sm font-semibold">SurveyJS + Next.js</span>
+        <span className="truncate text-sm font-semibold">SurveyJS + Next.js</span>
       </Link>
-      <span className="bg-secondary text-secondary-foreground rounded-full px-2 py-0.5 text-xs font-medium">
+      <span className="bg-secondary text-secondary-foreground hidden shrink-0 rounded-full px-2 py-0.5 text-xs font-medium sm:inline-block">
         shadcn/ui
       </span>
+      <span className="bg-border hidden h-5 w-px shrink-0 lg:inline-block" />
+      <a
+        href="https://surveyjs.io/documentation"
+        target="_blank"
+        rel="noreferrer"
+        aria-label="Documentation"
+        title="Documentation"
+        className="text-muted-foreground hover:text-foreground hidden shrink-0 items-center gap-1 text-xs sm:flex"
+      >
+        <span className="hidden lg:inline">Documentation</span>
+        <ArrowUpRightIcon className="size-3.5" />
+      </a>
     </div>
   );
 }
