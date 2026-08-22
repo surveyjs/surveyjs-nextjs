@@ -129,7 +129,7 @@ export function SchemaEditor({
           </Button>
           <Button size="sm" className="gap-2" onClick={save} disabled={pending || Boolean(syntaxError) || (!dirty && !customized)}>
             {saved ? <CheckIcon /> : <SaveIcon />}
-            {pending ? "Saving…" : "Save & render on server"}
+            {pending ? "Saving…" : "Save and quit"}
           </Button>
         </div>
       </div>

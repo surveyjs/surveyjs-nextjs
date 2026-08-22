@@ -50,7 +50,7 @@ test("editing the JSON changes what the server renders", async ({ page }) => {
     elements: [{ type: "text", name: "q1", title: "A brand new question" }],
   }, null, 2));
 
-  await page.getByRole("button", { name: /Save & render on server/ }).click();
+  await page.getByRole("button", { name: /Save and quit/ }).click();
   await expect(page).toHaveURL(/\/claims$/);
 
   // Reload so the assertion runs against a fresh server render, not the

@@ -2,7 +2,6 @@
 
 import { useCallback, useMemo, useState } from "react";
 import Link from "next/link";
-import { PlusIcon } from "lucide-react";
 import {
   insuranceClaimSeed,
   type ClaimRecord,
@@ -31,11 +30,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type EditorMode = "create" | "edit" | "view";
+type EditorMode = "edit" | "view";
 
 interface Editor {
   readonly mode: EditorMode;
-  readonly record: ClaimRecord | null;
+  readonly record: ClaimRecord;
   readonly key: number;
 }
 
@@ -66,42 +65,34 @@ export function RecordsView({ schema }: { schema: SurveyJSON }) {
   const [records, setRecords] = useState<ClaimRecord[]>(() =>
     insuranceClaimSeed.map((r) => ({ ...r, data: { ...r.data } })),
   );
-  const [editor, setEditor] = useState<Editor | null>(null);
+  const [editor, setEditor] = useState<Editor | null>(() => {
+    const first = insuranceClaimSeed[0];
+    return first
+      ? { mode: "view", record: { ...first, data: { ...first.data } }, key: 0 }
+      : null;
+  });
   const [deleteTarget, setDeleteTarget] = useState<ClaimRecord | null>(null);
 
   const open = useCallback(
-    (mode: EditorMode, record: ClaimRecord | null) =>
+    (mode: EditorMode, record: ClaimRecord) =>
       setEditor((prev) => ({ mode, record, key: (prev?.key ?? 0) + 1 })),
     [],
   );
 
   const handleComplete = useCallback(
     (data: SurveyData) => {
-      const saved: SurveyData = { ...data };
-      const fromField = String(saved.claimNumber ?? "").trim();
-      const id =
-        editor?.mode === "edit" && editor.record
-          ? editor.record.id
-          : fromField ||
-            `CLM-2026-${String(records.length + 1).padStart(4, "0")}`;
+      if (!editor) return;
+      const id = editor.record.id;
+      const saved: SurveyData = { ...data, claimNumber: id };
 
-      setRecords((prev) => {
-        if (editor?.mode === "edit" && editor.record) {
-          const existing = editor.record.id;
-          return prev.map((r) =>
-            r.id === existing ? { id: existing, data: saved } : r,
-          );
-        }
-        return [...prev, { id, data: { ...saved, claimNumber: id } }];
-      });
-
+      setRecords((prev) => prev.map((r) => (r.id === id ? { id, data: saved } : r)));
       setEditor((prev) => ({
         mode: "view",
-        record: { id, data: { ...saved, claimNumber: id } },
+        record: { id, data: saved },
         key: (prev?.key ?? 0) + 1,
       }));
     },
-    [editor, records.length],
+    [editor],
   );
 
   const confirmDelete = useCallback(() => {
@@ -113,20 +104,12 @@ export function RecordsView({ schema }: { schema: SurveyJSON }) {
 
   const editorTitle = useMemo(() => {
     if (!editor) return "Form";
-    if (editor.mode === "create") return "New claim";
-    if (editor.mode === "edit") return `Edit ${editor.record?.id ?? ""}`;
-    return `View ${editor.record?.id ?? ""}`;
+    return `${editor.mode === "edit" ? "Edit" : "View"} ${editor.record.id}`;
   }, [editor]);
 
   return (
     <>
-      <div className="mb-4 flex justify-end">
-        <Button onClick={() => open("create", null)}>
-          <PlusIcon /> New claim
-        </Button>
-      </div>
-
-      <div className="grid items-start gap-6 lg:grid-cols-[7fr_5fr]">
+      <div className="grid items-start gap-6 lg:grid-cols-2">
         <Card className="overflow-hidden py-0">
           <Table>
             <TableHeader>
@@ -146,7 +129,7 @@ export function RecordsView({ schema }: { schema: SurveyJSON }) {
                     colSpan={6}
                     className="text-muted-foreground py-10 text-center"
                   >
-                    No records. Create a new claim to get started.
+                    No records left.
                   </TableCell>
                 </TableRow>
               )}
@@ -219,7 +202,7 @@ export function RecordsView({ schema }: { schema: SurveyJSON }) {
             <h2 className="text-base font-semibold">{editorTitle}</h2>
             {editor && (
               <div className="flex gap-2">
-                {editor.mode === "view" && editor.record && (
+                {editor.mode === "view" && (
                   <Button
                     size="sm"
                     variant="outline"
@@ -238,14 +221,14 @@ export function RecordsView({ schema }: { schema: SurveyJSON }) {
             <SurveyForm
               key={editor.key}
               schema={schema}
-              data={editor.record?.data}
+              data={editor.record.data}
               mode={editor.mode === "view" ? "display" : "edit"}
               onComplete={editor.mode === "view" ? undefined : handleComplete}
             />
           ) : (
             <div className="border p-6">
               <p className="text-muted-foreground py-6 text-center">
-                Select a record to view or edit, or create a new claim.
+                Select a record to view or edit.
               </p>
             </div>
           )}
