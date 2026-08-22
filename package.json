@@ -2,15 +2,15 @@
   "name": "surveyjs-nextjs",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "test": "npm run build",
-    "e2e:ci": "npx playwright test",
-    "e2e:ui": "npx playwright test --ui",
-    "postinstall": "playwright install chromium"
+    "e2e:ci": "playwright install chromium && playwright test",
+    "e2e:ui": "npx playwright test --ui"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",

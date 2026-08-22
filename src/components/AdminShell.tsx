@@ -27,10 +27,17 @@ function Brand() {
         <span className="bg-primary text-primary-foreground flex size-8 shrink-0 items-center justify-center rounded-md">
           <LayersIcon className="size-4" />
         </span>
-        <span className="truncate text-sm font-semibold">SurveyJS + Next.js</span>
+        <span className="truncate text-sm font-semibold">
+          SurveyJS + Next.js Template
+        </span>
       </Link>
-      <span className="bg-secondary text-secondary-foreground hidden shrink-0 rounded-full px-2 py-0.5 text-xs font-medium sm:inline-block">
-        shadcn/ui
+      <span className="hidden shrink-0 items-center gap-1.5 sm:flex">
+        <span className="bg-secondary text-secondary-foreground rounded-full px-2 py-0.5 text-xs font-medium">
+          MIT
+        </span>
+        <span className="bg-secondary text-secondary-foreground rounded-full px-2 py-0.5 text-xs font-medium">
+          shadcn/ui
+        </span>
       </span>
       <span className="bg-border hidden h-5 w-px shrink-0 lg:inline-block" />
       <a
