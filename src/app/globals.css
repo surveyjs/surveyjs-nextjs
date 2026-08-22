@@ -148,20 +148,3 @@
     cursor: pointer;
   }
 }
-
-
-/* ──────────────────────────────────────────────────────────────────────────
-   SurveyJS' own mobile mode OFF (the survey follows this app's Tailwind
-   breakpoints instead — see public/survey-overrides/shadcn.css).
-   survey-core reads --sd-mobile-width off the survey root ONCE, in its mount
-   effect, and keeps that value for the model's lifetime; a falsy value means
-   "no ResizeObserver". Base survey CSS declares 600px on `.sd-root-modern`
-   itself, so an inherited value from a wrapper can never reach it and the 0
-   must already be in effect at mount. Hence it lives here, in the bundled
-   render-blocking stylesheet, and not in the /survey-overrides/*.css <link>s,
-   which load asynchronously. The doubled class out-specifies the base rule so
-   source order cannot matter either.
-   ────────────────────────────────────────────────────────────────────────── */
-.sd-root-modern.sd-root-modern {
-  --sd-mobile-width: 0px;
-}

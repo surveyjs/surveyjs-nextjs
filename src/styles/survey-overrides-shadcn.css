@@ -94,33 +94,3 @@
   width: calc(100% - 2.25em);
   right: calc(50% + 1.125em);
 }
-
-/* ── responsive ───────────────────────────────────────────────────────────
-   SurveyJS' own mobile mode is off, so the survey follows the same Tailwind
-   breakpoints as the rest of this app. The native column lays its fields out
-   with `grid gap-4 sm:grid-cols-2`, i.e. two columns from `sm` up; these
-   rules make the SurveyJS rows collapse at the same point. Which breakpoint
-   to pick is an app decision, so it is not part of the adapter.
-
-   The `--sd-mobile-width: 0px` that switches the mobile mode off is NOT here:
-   survey-core reads it at mount, before this sheet is guaranteed to be
-   applied, so it lives in src/app/globals.css. */
-
-/* below sm — phones */
-@media (width < 640px) {
-  .sd-row.sd-row--multiple {
-    flex-direction: column;
-  }
-}
-
-/* below md — tablets */
-@media (width < 768px) {
-}
-
-/* below lg — small desktops */
-@media (width < 1024px) {
-}
-
-/* 2xl and up — large desktops */
-@media (width >= 1536px) {
-}
