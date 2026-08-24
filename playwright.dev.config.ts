@@ -15,6 +15,7 @@ const PORT = 3100;
 
 export default defineConfig({
   ...base,
+  globalSetup: "./e2e/warm-dev-routes.ts",
   outputDir: "test-results-dev",
   reporter: [
     ["list"],

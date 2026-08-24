@@ -14,14 +14,6 @@ export {
   type SchemaInput,
 } from "./createSurveyModel";
 
-export {
-  navItems,
-  getNavItem,
-  isActiveRoute,
-  type NavItem,
-  type NavId,
-} from "./navigation";
-
 import { checkoutSchema } from "./checkout";
 import { insuranceClaimSchema } from "./insurance-claim";
 import { medicalFormSchema } from "./medical-form";
