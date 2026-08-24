@@ -62,7 +62,13 @@ function claimantName(data: SurveyData): string {
   return [data.firstName, data.lastName].filter(Boolean).join(" ") || "—";
 }
 
-export function RecordsView({ schema }: { schema: SurveyJSON }) {
+export function RecordsView({
+  schema,
+  schemaId,
+}: {
+  schema: SurveyJSON;
+  schemaId: string;
+}) {
   const [records, setRecords] = useState<ClaimRecord[]>(() =>
     insuranceClaimSeed.map((r) => ({ ...r, data: { ...r.data } })),
   );
@@ -235,6 +241,7 @@ export function RecordsView({ schema }: { schema: SurveyJSON }) {
             <SurveyForm
               key={editor.key}
               schema={schema}
+              schemaId={schemaId}
               data={editor.record.data}
               mode={editor.mode === "view" ? "display" : "edit"}
               onComplete={editor.mode === "view" ? undefined : handleComplete}

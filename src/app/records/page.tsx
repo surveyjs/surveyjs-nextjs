@@ -1,24 +1,20 @@
-import { getNavItem } from "@/schemas";
-import { getSurveyJson, isCustomized } from "@/lib/schema-store";
+import { getNavItem, getSchemaDefinition } from "@/schemas";
 import { PageHeader } from "@/components/PageHeader";
 import { RecordsView } from "@/components/RecordsView";
 
 const nav = getNavItem("records");
 
-export default async function RecordsPage() {
-  const [json, customized] = await Promise.all([
-    getSurveyJson(nav.schemaId),
-    isCustomized(nav.schemaId),
-  ]);
-
+export default function RecordsPage() {
   return (
     <div>
       <PageHeader
         title={nav.label}
         description={nav.description}
-        customized={customized}
       />
-      <RecordsView schema={json} />
+      <RecordsView
+        schema={getSchemaDefinition(nav.schemaId).json}
+        schemaId={nav.schemaId}
+      />
     </div>
   );
 }

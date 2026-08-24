@@ -34,11 +34,22 @@ test("/records renders the table and the SurveyJS editor", async ({ page }) => {
   await expect(page.locator(".sd-root-modern").first()).toBeVisible();
 });
 
-test("editing the JSON changes what the server renders", async ({ page }) => {
-  await page.goto("/claims/configure");
+test("an edited JSON is kept in the browser and survives a reload", async ({
+  page,
+}) => {
+  // The saved definition is applied after hydration, so this is exactly where a
+  // mismatch would show up.
+  const errors: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") errors.push(message.text());
+  });
 
-  const editor = page.locator(".monaco-editor").first();
-  await expect(editor).toBeVisible();
+  await page.goto("/claims/configure");
+  // Monaco is a heavy dynamic import; under parallel workers it needs longer
+  // than the default expect timeout.
+  await expect(page.locator(".monaco-editor").first()).toBeVisible({
+    timeout: 30_000,
+  });
 
   // Replace the whole document with a minimal survey, then save.
   await page.evaluate((source) => {
@@ -50,17 +61,57 @@ test("editing the JSON changes what the server renders", async ({ page }) => {
     elements: [{ type: "text", name: "q1", title: "A brand new question" }],
   }, null, 2));
 
+  // The live preview picking up the edit proves the page is hydrated and the
+  // editor state has propagated — without this the Save click can land on a
+  // button that has no handler attached yet.
+  await expect(page.getByText("A brand new question").first()).toBeVisible({
+    timeout: 15_000,
+  });
+
   await page.getByRole("button", { name: /Save and quit/ }).click();
   await expect(page).toHaveURL(/\/claims$/);
+  await expect(page.getByText("A brand new question")).toBeVisible();
 
-  // Reload so the assertion runs against a fresh server render, not the
-  // client-side navigation result.
+  // The definition lives in localStorage, so a full reload keeps it — while the
+  // HTML the server sent stays canonical (see the SEO assertion below).
   const response = await page.reload();
-  expect(await response!.text()).toContain("A brand new question");
+  const serverHtml = await response!.text();
+  expect(serverHtml).not.toContain("A brand new question");
+  expect(serverHtml).toContain("Patient Intake");
+  await expect(page.getByText("A brand new question")).toBeVisible();
 
   await page.goto("/claims/configure");
   await page.getByRole("button", { name: "Reset" }).click();
-  await expect(page.getByText("Custom JSON")).toHaveCount(0);
+  await page.goto("/claims");
+  await expect(page.getByText("A brand new question")).toHaveCount(0);
+  await expect(page.getByText("Patient Intake").first()).toBeVisible();
+
+  expect(errors).toHaveLength(0);
+});
+
+test("the spinner shows only for a visitor with a saved definition", async ({
+  page,
+}) => {
+  await page.goto("/claims");
+  // Nothing saved: the server markup stays put, no loading state at all.
+  await expect(page.locator('[role="status"]')).toHaveCount(0);
+
+  await page.evaluate(() => {
+    localStorage.setItem(
+      "sjs-demo-schema:medical-form",
+      JSON.stringify({
+        title: "Saved by the e2e test",
+        elements: [{ type: "text", name: "q1", title: "A saved question" }],
+      }),
+    );
+  });
+
+  // Swapping in the saved definition is deferred past a paint on purpose, so
+  // the spinner is genuinely drawn rather than collapsed into one frame.
+  await page.reload();
+  await expect(page.locator('[role="status"]')).toBeVisible();
+  await expect(page.getByText("A saved question")).toBeVisible();
+  await expect(page.locator('[role="status"]')).toHaveCount(0);
 });
 
 for (const route of allRoutes) {
