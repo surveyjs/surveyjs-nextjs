@@ -9,7 +9,9 @@
 # testing
 /coverage
 /test-results/
+/test-results-dev/
 /playwright-report/
+/playwright-report-dev/
 /blob-report/
 /playwright/.cache/
 

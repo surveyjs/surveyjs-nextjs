@@ -36,6 +36,8 @@ export function createSurveyModel(
 
   model.mode = mode;
 
+  model.applyTheme({ isPanelless: true });
+
   if (locale) {
     model.locale = locale;
   }

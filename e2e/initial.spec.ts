@@ -37,11 +37,17 @@ test("/records renders the table and the SurveyJS editor", async ({ page }) => {
 test("an edited JSON is kept in the browser and survives a reload", async ({
   page,
 }) => {
+  // Three full page loads plus a heavy dynamic import; against `next dev`, where
+  // each route compiles on first request, the default budget is too tight.
+  test.slow();
+
   // The saved definition is applied after hydration, so this is exactly where a
   // mismatch would show up.
   const errors: string[] = [];
   page.on("console", (message) => {
-    if (message.type() === "error") errors.push(message.text());
+    if (message.type() === "error" || message.type() === "warning") {
+      errors.push(message.text());
+    }
   });
 
   await page.goto("/claims/configure");
@@ -81,6 +87,11 @@ test("an edited JSON is kept in the browser and survives a reload", async ({
   await expect(page.getByText("A brand new question")).toBeVisible();
 
   await page.goto("/claims/configure");
+  // Reset is disabled in the server markup and only enables once the saved
+  // definition has been read, which happens after hydration.
+  await expect(page.locator(".monaco-editor").first()).toBeVisible({
+    timeout: 30_000,
+  });
   await page.getByRole("button", { name: "Reset" }).click();
   await page.goto("/claims");
   await expect(page.getByText("A brand new question")).toHaveCount(0);
@@ -121,9 +132,10 @@ for (const route of allRoutes) {
       errors.push(error.message);
     });
     // Hydration mismatches are reported through console.error, not as an
-    // uncaught exception, so pageerror alone never sees them.
+    // uncaught exception, so pageerror alone never sees them. Warnings count
+    // too: React reports plenty of real problems at that level.
     page.on("console", (message) => {
-      if (message.type() === "error") {
+      if (message.type() === "error" || message.type() === "warning") {
         errors.push(message.text());
       }
     });

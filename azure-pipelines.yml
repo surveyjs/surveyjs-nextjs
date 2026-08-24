@@ -129,6 +129,22 @@ jobs:
         condition: succeededOrFailed()
         displayName: "Publish Playwright test results"
 
+      # The same suite against `next dev`. React strips most of its warnings
+      # from a production build, so this run is the one that catches them.
+      # It runs even when the production run failed, so its signal is not lost.
+      - script: |
+          npm run e2e:dev
+        condition: succeededOrFailed()
+        displayName: "Run Playwright E2E tests (dev server)"
+
+      - task: PublishTestResults@2
+        inputs:
+          testResultsFormat: "JUnit"
+          testResultsFiles: "$(Build.SourcesDirectory)/test-results-dev/e2e-junit-results.xml"
+          testRunTitle: "Playwright E2E Tests (dev server)"
+        condition: succeededOrFailed()
+        displayName: "Publish Playwright dev test results"
+
       - task: PublishBuildArtifacts@1
         inputs:
           PathtoPublish: "$(Build.SourcesDirectory)/test-results"
@@ -136,3 +152,11 @@ jobs:
           publishLocation: "Container"
         condition: failed()
         displayName: "Publish test artifacts on failure"
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: "$(Build.SourcesDirectory)/test-results-dev"
+          ArtifactName: "E2E-Test-Results-Dev"
+          publishLocation: "Container"
+        condition: failed()
+        displayName: "Publish dev test artifacts on failure"
