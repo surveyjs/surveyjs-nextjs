@@ -13,6 +13,7 @@ import {
   MoreHorizontalIcon,
   PencilIcon,
   PlayIcon,
+  Settings2Icon,
   Trash2Icon,
   XIcon,
 } from "lucide-react";
@@ -50,13 +51,13 @@ export function SurveyRow({
     setEditingName(null);
   };
 
-  const openEditor = () => router.push(`/surveys/${survey.id}/edit`);
+  const openConfigure = () => router.push(`/surveys/${survey.id}/configure`);
 
   return (
     <div
       className="hover:bg-accent/40 flex cursor-pointer flex-col gap-3 border-b px-4 py-4 transition-colors last:border-b-0 sm:flex-row sm:items-center sm:gap-4"
       onClick={() => {
-        if (editingName === null) openEditor();
+        if (editingName === null) openConfigure();
       }}
     >
       <div className="min-w-0 flex-1">
@@ -127,6 +128,12 @@ export function SurveyRow({
         onClick={(event) => event.stopPropagation()}
       >
         <Button variant="outline" size="sm" asChild>
+          <Link href={`/surveys/${survey.id}/configure`}>
+            <Settings2Icon />
+            Configure
+          </Link>
+        </Button>
+        <Button variant="outline" size="sm" asChild>
           <Link href={`/surveys/${survey.id}/run`}>
             <PlayIcon />
             Run
@@ -146,33 +153,15 @@ export function SurveyRow({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-52">
-            <DropdownMenuItem onSelect={openEditor}>
-              <PencilIcon />
-              Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={() => router.push(`/surveys/${survey.id}/run`)}
-            >
-              <PlayIcon />
-              Run
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={() => router.push(`/surveys/${survey.id}/results`)}
-            >
-              <BarChart3Icon />
-              View Results
-            </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => exportSurveyToPdf(survey)}>
               <FileDownIcon />
               Export to PDF
             </DropdownMenuItem>
 
-            <DropdownMenuSeparator />
-
             <DropdownMenuItem
               onSelect={async () => {
                 const clone = await cloneSurvey(survey.id);
-                if (clone) router.push(`/surveys/${clone.id}/edit`);
+                if (clone) router.push(`/surveys/${clone.id}/configure`);
               }}
             >
               <CopyPlusIcon />

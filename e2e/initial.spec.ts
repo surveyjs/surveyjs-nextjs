@@ -5,7 +5,7 @@ const SEED_SURVEY = "insurance-claim";
 const allRoutes = [
   "/",
   "/surveys",
-  `/surveys/${SEED_SURVEY}/edit`,
+  `/surveys/${SEED_SURVEY}/configure`,
   `/surveys/${SEED_SURVEY}/run`,
   `/surveys/${SEED_SURVEY}/results`,
 ];
@@ -54,7 +54,7 @@ test("a survey runs, and the response lands in its results", async ({
 
 test("the Creator loads for a seeded survey", async ({ page }) => {
   test.slow();
-  await page.goto(`/surveys/${SEED_SURVEY}/edit`);
+  await page.goto(`/surveys/${SEED_SURVEY}/configure`);
   await expect(page.locator(".svc-creator").first()).toBeVisible({
     timeout: 30_000,
   });
@@ -76,7 +76,7 @@ test("a survey can be created, renamed and deleted in the browser", async ({
   await page.getByRole("button", { name: "Create a Survey" }).first().click();
 
   // A new survey opens straight in the Creator, exactly like on My Forms.
-  await expect(page).toHaveURL(/\/surveys\/survey-1\/edit$/);
+  await expect(page).toHaveURL(/\/surveys\/survey-1\/configure$/);
   await expect(page.locator(".svc-creator").first()).toBeVisible({
     timeout: 30_000,
   });

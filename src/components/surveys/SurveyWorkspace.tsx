@@ -31,10 +31,10 @@ const ResultsPane = dynamic(() => import("./ResultsPane"), {
   loading: PaneLoader,
 });
 
-export type WorkspaceTab = "edit" | "run" | "results";
+export type WorkspaceTab = "configure" | "run" | "results";
 
 const TABS: { id: WorkspaceTab; label: string; segment: string }[] = [
-  { id: "edit", label: "Editor", segment: "edit" },
+  { id: "configure", label: "Configure", segment: "configure" },
   { id: "run", label: "Run", segment: "run" },
   { id: "results", label: "Results", segment: "results" },
 ];
@@ -93,7 +93,7 @@ export function SurveyWorkspace({
       </div>
 
       <div className="min-h-0 flex-1">
-        {tab === "edit" && <CreatorPane surveyId={survey.id} />}
+        {tab === "configure" && <CreatorPane surveyId={survey.id} />}
         {tab === "run" && <RunPane survey={survey} />}
         {tab === "results" && (
           <ResultsPane surveyId={survey.id} json={survey.json} />

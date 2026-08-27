@@ -9,7 +9,7 @@
 const ROUTES = [
   "/",
   "/surveys",
-  "/surveys/insurance-claim/edit",
+  "/surveys/insurance-claim/configure",
   "/surveys/insurance-claim/run",
   "/surveys/insurance-claim/results",
 ];

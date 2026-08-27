@@ -15,7 +15,7 @@ export function SurveysPage() {
 
   const create = async () => {
     const survey = await createSurvey();
-    router.push(`/surveys/${survey.id}/edit`);
+    router.push(`/surveys/${survey.id}/configure`);
   };
 
   return (

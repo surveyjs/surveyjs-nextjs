@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { ArrowUpRightIcon, LayersIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "./ThemeSwitcher";
@@ -11,17 +10,14 @@ const PRODUCTS = ["Forms", "UI Creator", "Dashboard", "PDF", "shadcn/ui"];
 function Brand() {
   return (
     <div className="flex min-w-0 items-center gap-2 overflow-hidden lg:gap-4">
-      <Link
-        href="/"
-        className="flex min-w-0 items-center gap-2 text-inherit hover:underline"
-      >
+      <div className="flex min-w-0 items-center gap-2">
         <span className="bg-primary text-primary-foreground flex size-8 shrink-0 items-center justify-center rounded-md">
           <LayersIcon className="size-4" />
         </span>
         <span className="truncate text-sm font-semibold">
           SurveyJS + Next.js Template
         </span>
-      </Link>
+      </div>
       <span className="hidden shrink-0 items-center gap-1.5 lg:flex">
         {PRODUCTS.map((product) => (
           <span

@@ -29,8 +29,8 @@ Open http://localhost:3000/ in your browser.
 | Route | What it shows |
 | --- | --- |
 | `/` | Redirects to `/surveys`. |
-| `/surveys` | The survey list: inline rename, created/updated dates, and a per-row menu — run, edit, results, PDF, clone, delete. |
-| `/surveys/[id]/edit` | Survey Creator with the designer, JSON editor, theme and translation tabs. Autosaves. |
+| `/surveys` | The form list: inline rename, created/updated dates, Configure / Run / Results buttons per row, and an overflow menu with PDF export, clone and delete. |
+| `/surveys/[id]/configure` | Survey Creator with the designer, JSON editor, theme and translation tabs. Autosaves. |
 | `/surveys/[id]/run` | The survey itself, server-rendered. Submitting adds a response; "Save as PDF" exports what is currently filled in. |
 | `/surveys/[id]/results` | The dashboard, charting every response for that survey. |
 
@@ -118,7 +118,7 @@ synchronous, so replacing a body with a request changes no call site.
 src/
   app/
     surveys/page.tsx              The survey list
-    surveys/[id]/edit             Creator
+    surveys/[id]/configure        Creator
     surveys/[id]/run              Form Library
     surveys/[id]/results          Dashboard
   storage/
