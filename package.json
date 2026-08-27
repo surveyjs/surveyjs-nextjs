@@ -2,7 +2,7 @@
   "name": "surveyjs-nextjs",
   "version": "0.1.0",
   "private": true,
-  "license": "MIT",
+  "license": "https://surveyjs.io/Licenses#SurveyCreator",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
