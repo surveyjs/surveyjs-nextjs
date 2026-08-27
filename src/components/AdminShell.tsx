@@ -6,7 +6,7 @@ import { ArrowUpRightIcon, LayersIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 
-const PRODUCTS = ["Form Library", "Creator", "Dashboard", "PDF"];
+const PRODUCTS = ["Forms", "UI Creator", "Dashboard", "PDF", "shadcn/ui"];
 
 function Brand() {
   return (
@@ -19,7 +19,7 @@ function Brand() {
           <LayersIcon className="size-4" />
         </span>
         <span className="truncate text-sm font-semibold">
-          SurveyJS Suite + Next.js Template
+          SurveyJS + Next.js Template
         </span>
       </Link>
       <span className="hidden shrink-0 items-center gap-1.5 lg:flex">

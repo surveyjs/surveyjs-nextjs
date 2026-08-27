@@ -1,4 +1,4 @@
-import type { DemoSurvey } from "@/demo/types";
+import type { DemoSurvey } from "@/storage/types";
 import type { SurveyData } from "@/schemas";
 
 function fileNameFor(survey: DemoSurvey): string {

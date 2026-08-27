@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { Model } from "survey-core";
 import { VisualizationPanel } from "survey-analytics";
 import type { SurveyJSON } from "@/schemas";
-import { useWorkspace } from "@/demo/useWorkspace";
+import { useResults } from "@/hooks/useWorkspace";
 
 import "survey-analytics/survey.analytics.css";
 
@@ -16,16 +16,13 @@ export default function ResultsPane({
   json: SurveyJSON;
 }) {
   const container = useRef<HTMLDivElement>(null);
-  const { responses } = useWorkspace();
+  const responses = useResults(surveyId);
 
-  // The store hands back a stable array, so this only recomputes when the
-  // workspace actually changes — the dashboard is expensive to rebuild.
+  // The dashboard is expensive to rebuild, so the mapped array is memoised on
+  // the responses themselves.
   const data = useMemo(
-    () =>
-      responses
-        .filter((response) => response.surveyId === surveyId)
-        .map((response) => response.data),
-    [responses, surveyId],
+    () => responses.map((response) => response.data),
+    [responses],
   );
 
   useEffect(() => {

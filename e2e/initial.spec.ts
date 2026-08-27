@@ -28,7 +28,7 @@ function captureProblems(page: Page): string[] {
 test("root redirects to the survey list", async ({ page }) => {
   await page.goto("/");
   await expect(page).toHaveURL(/\/surveys$/);
-  await expect(page.getByRole("heading", { name: "My Surveys" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "My Forms" })).toBeVisible();
 });
 
 test("the survey list is rendered on the server", async ({ page }) => {
@@ -75,7 +75,7 @@ test("a survey can be created, renamed and deleted in the browser", async ({
   await page.goto("/surveys");
   await page.getByRole("button", { name: "Create a Survey" }).first().click();
 
-  // A new survey opens straight in the Creator, exactly like on My Surveys.
+  // A new survey opens straight in the Creator, exactly like on My Forms.
   await expect(page).toHaveURL(/\/surveys\/survey-1\/edit$/);
   await expect(page.locator(".svc-creator").first()).toBeVisible({
     timeout: 30_000,

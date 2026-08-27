@@ -1,6 +1,5 @@
 "use client";
 
-import "@/lib/survey-ssr-environment";
 import { useEffect, useMemo, useState } from "react";
 import { Survey } from "survey-react-ui";
 import type { Model, Question } from "survey-core";

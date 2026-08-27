@@ -4,13 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  ArchiveIcon,
-  ArchiveRestoreIcon,
   BarChart3Icon,
   CalendarIcon,
   CheckIcon,
   ClockIcon,
-  CopyIcon,
   CopyPlusIcon,
   FileDownIcon,
   MoreHorizontalIcon,
@@ -19,7 +16,6 @@ import {
   Trash2Icon,
   XIcon,
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -33,10 +29,8 @@ import {
   cloneSurvey,
   deleteSurvey,
   renameSurvey,
-  setArchived,
-  setPublished,
-} from "@/demo/store";
-import type { DemoSurvey } from "@/demo/types";
+} from "@/storage/survey-json";
+import type { DemoSurvey } from "@/storage/types";
 import { exportSurveyToPdf } from "@/lib/pdf-export";
 
 export function SurveyRow({
@@ -51,7 +45,7 @@ export function SurveyRow({
 
   const commitRename = () => {
     if (editingName !== null && editingName.trim()) {
-      renameSurvey(survey.id, editingName.trim());
+      void renameSurvey(survey.id, editingName.trim());
     }
     setEditingName(null);
   };
@@ -71,22 +65,17 @@ export function SurveyRow({
             <span className="truncate font-medium" title={survey.name}>
               {survey.name}
             </span>
-            {!survey.archived && (
-              <Button
-                variant="ghost"
-                size="icon-xs"
-                aria-label="Rename survey"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setEditingName(survey.name);
-                }}
-              >
-                <PencilIcon />
-              </Button>
-            )}
-            <Badge variant={survey.isPublished ? "default" : "secondary"}>
-              {survey.isPublished ? "Published" : "Draft"}
-            </Badge>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              aria-label="Rename survey"
+              onClick={(event) => {
+                event.stopPropagation();
+                setEditingName(survey.name);
+              }}
+            >
+              <PencilIcon />
+            </Button>
           </div>
         ) : (
           <div
@@ -181,35 +170,17 @@ export function SurveyRow({
             <DropdownMenuSeparator />
 
             <DropdownMenuItem
-              onSelect={() => {
-                const clone = cloneSurvey(survey.id);
+              onSelect={async () => {
+                const clone = await cloneSurvey(survey.id);
                 if (clone) router.push(`/surveys/${clone.id}/edit`);
               }}
             >
               <CopyPlusIcon />
               Clone
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={() => setPublished(survey.id, !survey.isPublished)}
-            >
-              <CheckIcon />
-              {survey.isPublished ? "Unpublish" : "Publish"}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onSelect={() => navigator.clipboard?.writeText(survey.id)}
-            >
-              <CopyIcon />
-              Copy ID
-            </DropdownMenuItem>
 
             <DropdownMenuSeparator />
 
-            <DropdownMenuItem
-              onSelect={() => setArchived(survey.id, !survey.archived)}
-            >
-              {survey.archived ? <ArchiveRestoreIcon /> : <ArchiveIcon />}
-              {survey.archived ? "Restore" : "Archive"}
-            </DropdownMenuItem>
             <DropdownMenuItem
               variant="destructive"
               onSelect={() => {
@@ -218,7 +189,7 @@ export function SurveyRow({
                     "Do you really want to delete this survey? This operation can't be undone.",
                   )
                 ) {
-                  deleteSurvey(survey.id);
+                  void deleteSurvey(survey.id);
                 }
               }}
             >

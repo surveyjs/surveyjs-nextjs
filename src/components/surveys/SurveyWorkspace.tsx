@@ -3,9 +3,8 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { ArrowLeftIcon, Loader2Icon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useSurvey } from "@/demo/useWorkspace";
+import { useSurvey } from "@/hooks/useWorkspace";
 import { cn } from "@/lib/utils";
 import RunPane from "./RunPane";
 
@@ -57,7 +56,7 @@ export function SurveyWorkspace({
           It may have been deleted from this browser&apos;s workspace.
         </p>
         <Button className="mt-6" asChild>
-          <Link href="/surveys">Back to My Surveys</Link>
+          <Link href="/surveys">Back to My Forms</Link>
         </Button>
       </div>
     );
@@ -69,13 +68,10 @@ export function SurveyWorkspace({
         <Button variant="ghost" size="sm" asChild>
           <Link href="/surveys">
             <ArrowLeftIcon />
-            My Surveys
+            My Forms
           </Link>
         </Button>
         <h1 className="min-w-0 truncate text-lg font-semibold">{survey.name}</h1>
-        <Badge variant={survey.isPublished ? "default" : "secondary"}>
-          {survey.isPublished ? "Published" : "Draft"}
-        </Badge>
 
         <nav className="bg-muted ml-auto inline-flex rounded-md p-0.5">
           {TABS.map((item) => (

@@ -7,7 +7,7 @@ import {
   type SurveyData,
   type SurveyJSON,
 } from "@/schemas";
-import type { DemoResponse, DemoState, DemoSurvey } from "./types";
+import type { DemoResponse, DemoSurvey } from "@/storage/types";
 
 /**
  * The workspace a first-time visitor sees. Fixed ids and dates: the list is
@@ -21,8 +21,6 @@ export const seedSurveys: readonly DemoSurvey[] = [
     json: medicalFormSchema.json,
     createdAt: "2026-05-14",
     updatedAt: "2026-08-02",
-    isPublished: true,
-    archived: false,
   },
   {
     id: "insurance-claim",
@@ -30,8 +28,6 @@ export const seedSurveys: readonly DemoSurvey[] = [
     json: insuranceClaimSchema.json,
     createdAt: "2026-06-01",
     updatedAt: "2026-08-18",
-    isPublished: true,
-    archived: false,
   },
   {
     id: "store-checkout",
@@ -39,17 +35,6 @@ export const seedSurveys: readonly DemoSurvey[] = [
     json: checkoutSchema.json,
     createdAt: "2026-07-09",
     updatedAt: "2026-07-30",
-    isPublished: false,
-    archived: false,
-  },
-  {
-    id: "employee-survey-2025",
-    name: "Employee Satisfaction 2025",
-    json: checkoutSchema.json,
-    createdAt: "2025-11-03",
-    updatedAt: "2026-01-20",
-    isPublished: false,
-    archived: true,
   },
 ];
 
@@ -193,24 +178,9 @@ export function generateResponses(
   return responses;
 }
 
-/** The full first-visit workspace, responses included. */
-export function createSeedState(): DemoState {
-  return {
-    surveys: seedSurveys,
-    responses: seedSurveys
-      .filter((survey) => !survey.archived)
-      .flatMap((survey) =>
-        generateResponses(survey.json, survey.id, RESPONSES_PER_SURVEY),
-      ),
-  };
+/** Responses for every seeded survey — what a first-time visitor starts with. */
+export function createSeedResponses(): DemoResponse[] {
+  return seedSurveys.flatMap((survey) =>
+    generateResponses(survey.json, survey.id, RESPONSES_PER_SURVEY),
+  );
 }
-
-/**
- * What the server renders. Responses are left out on purpose: they are only
- * needed by the dashboard, which is client-only anyway, and generating 180 of
- * them on every request would be wasted work.
- */
-export const serverState: DemoState = {
-  surveys: seedSurveys,
-  responses: [],
-};

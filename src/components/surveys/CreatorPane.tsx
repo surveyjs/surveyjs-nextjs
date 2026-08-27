@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { SurveyCreator, SurveyCreatorComponent } from "survey-creator-react";
 import type { ICreatorOptions } from "survey-creator-core";
-import { findSurvey, getSnapshot, saveSurveyJson } from "@/demo/store";
+import { findSurvey, saveSurveyJson } from "@/storage/survey-json";
 
 import "survey-core/survey-core.css";
 import "survey-creator-core/survey-creator-core.css";
@@ -22,14 +22,19 @@ export default function CreatorPane({ surveyId }: { surveyId: string }) {
   // would rebuild the creator on each keystroke.
   const creator = useMemo(() => {
     const instance = new SurveyCreator(CREATOR_OPTIONS);
-    const survey = findSurvey(getSnapshot(), surveyId);
+    const survey = findSurvey(surveyId);
     if (survey) instance.JSON = survey.json;
+    // The callback is what tells the Creator the save went through, so it waits
+    // for the storage call — with a real endpoint behind it, a failed request
+    // reports back instead of being swallowed.
     instance.saveSurveyFunc = (
       saveNo: number,
       callback: (no: number, isSuccess: boolean) => void,
     ) => {
-      saveSurveyJson(surveyId, instance.JSON);
-      callback(saveNo, true);
+      saveSurveyJson(surveyId, instance.JSON).then(
+        () => callback(saveNo, true),
+        () => callback(saveNo, false),
+      );
     };
     return instance;
   }, [surveyId]);
