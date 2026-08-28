@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { PlusIcon, RotateCcwIcon } from "lucide-react";
+import { Loader2Icon, PlusIcon, RotateCcwIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createSurvey } from "@/storage/survey-json";
 import { resetDemoData } from "@/storage/workspace-cache";
@@ -13,9 +14,18 @@ export function SurveysPage() {
   const surveys = useSurveys();
   const responses = useResults();
 
+  // Stays true until the Creator route has taken over, so the button reacts to
+  // the click rather than sitting idle while the editor loads.
+  const [creating, setCreating] = useState(false);
+
   const create = async () => {
-    const survey = await createSurvey();
-    router.push(`/surveys/${survey.id}/configure`);
+    setCreating(true);
+    try {
+      const survey = await createSurvey();
+      router.push(`/surveys/${survey.id}/configure`);
+    } catch {
+      setCreating(false);
+    }
   };
 
   return (
@@ -27,8 +37,8 @@ export function SurveysPage() {
             <RotateCcwIcon />
             Reset demo data
           </Button>
-          <Button size="sm" onClick={create}>
-            <PlusIcon />
+          <Button size="sm" onClick={create} disabled={creating}>
+            {creating ? <Loader2Icon className="animate-spin" /> : <PlusIcon />}
             Create a Survey
           </Button>
         </div>
@@ -40,8 +50,8 @@ export function SurveysPage() {
             <p className="text-muted-foreground text-sm">
               No surveys yet. Create your first one to get started.
             </p>
-            <Button onClick={create}>
-              <PlusIcon />
+            <Button onClick={create} disabled={creating}>
+              {creating ? <Loader2Icon className="animate-spin" /> : <PlusIcon />}
               Create a Survey
             </Button>
           </div>

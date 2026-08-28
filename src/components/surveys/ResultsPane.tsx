@@ -50,5 +50,14 @@ export default function ResultsPane({
     );
   }
 
-  return <div ref={container} className="rounded-lg border p-2" />;
+  // `sjs-theme-overrides` is the class the SurveyJS theme adapters hang their
+  // `--sjs2-*` map on. survey-core stamps it on a survey's own root, which the
+  // dashboard does not have — without it every chart falls back to the light
+  // defaults baked into survey.analytics.css and ignores the app's theme.
+  return (
+    <div
+      ref={container}
+      className="sjs-theme-overrides rounded-lg border p-2"
+    />
+  );
 }

@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ComponentType } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import Link, { useLinkStatus } from "next/link";
 import {
   BarChart3Icon,
   CalendarIcon,
@@ -10,6 +10,7 @@ import {
   ClockIcon,
   CopyPlusIcon,
   FileDownIcon,
+  Loader2Icon,
   MoreHorizontalIcon,
   PencilIcon,
   PlayIcon,
@@ -34,6 +35,21 @@ import {
 import type { DemoSurvey } from "@/storage/types";
 import { exportSurveyToPdf } from "@/lib/pdf-export";
 
+/**
+ * Swaps a link's icon for a spinner while its navigation is in flight.
+ *
+ * `useLinkStatus` only works inside a `<Link>`, which is the point: the buttons
+ * stay real links — prefetched, middle-clickable — and still react the instant
+ * they are pressed. The Creator and the dashboard take a moment to load, and
+ * without this the row looks dead in the meantime.
+ */
+function LinkIcon({ idle: Idle }: { idle: ComponentType<{ className?: string }> }) {
+  const { pending } = useLinkStatus();
+  return pending ? <Loader2Icon className="animate-spin" /> : <Idle />;
+}
+
+type Working = "pdf" | "clone" | "delete" | null;
+
 export function SurveyRow({
   survey,
   responseCount,
@@ -43,6 +59,7 @@ export function SurveyRow({
 }) {
   const router = useRouter();
   const [editingName, setEditingName] = useState<string | null>(null);
+  const [working, setWorking] = useState<Working>(null);
 
   const commitRename = () => {
     if (editingName !== null && editingName.trim()) {
@@ -51,15 +68,18 @@ export function SurveyRow({
     setEditingName(null);
   };
 
-  const openConfigure = () => router.push(`/surveys/${survey.id}/configure`);
+  /** Menu actions close the menu, so their spinner shows on the trigger. */
+  const run = async (action: Exclude<Working, null>, task: () => Promise<void>) => {
+    setWorking(action);
+    try {
+      await task();
+    } finally {
+      setWorking(null);
+    }
+  };
 
   return (
-    <div
-      className="hover:bg-accent/40 flex cursor-pointer flex-col gap-3 border-b px-4 py-4 transition-colors last:border-b-0 sm:flex-row sm:items-center sm:gap-4"
-      onClick={() => {
-        if (editingName === null) openConfigure();
-      }}
-    >
+    <div className="flex flex-col gap-3 border-b px-4 py-4 last:border-b-0 sm:flex-row sm:items-center sm:gap-4">
       <div className="min-w-0 flex-1">
         {editingName === null ? (
           <div className="flex min-w-0 items-center gap-2">
@@ -70,19 +90,13 @@ export function SurveyRow({
               variant="ghost"
               size="icon-xs"
               aria-label="Rename survey"
-              onClick={(event) => {
-                event.stopPropagation();
-                setEditingName(survey.name);
-              }}
+              onClick={() => setEditingName(survey.name)}
             >
               <PencilIcon />
             </Button>
           </div>
         ) : (
-          <div
-            className="flex max-w-md items-center gap-2"
-            onClick={(event) => event.stopPropagation()}
-          >
+          <div className="flex max-w-md items-center gap-2">
             <Input
               autoFocus
               value={editingName}
@@ -123,46 +137,56 @@ export function SurveyRow({
         </span>
       </div>
 
-      <div
-        className="flex shrink-0 items-center gap-2"
-        onClick={(event) => event.stopPropagation()}
-      >
+      <div className="flex shrink-0 items-center gap-2">
         <Button variant="outline" size="sm" asChild>
           <Link href={`/surveys/${survey.id}/configure`}>
-            <Settings2Icon />
+            <LinkIcon idle={Settings2Icon} />
             Configure
           </Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
           <Link href={`/surveys/${survey.id}/run`}>
-            <PlayIcon />
+            <LinkIcon idle={PlayIcon} />
             Run
           </Link>
         </Button>
         <Button variant="outline" size="sm" asChild>
           <Link href={`/surveys/${survey.id}/results`}>
-            <BarChart3Icon />
+            <LinkIcon idle={BarChart3Icon} />
             Results
           </Link>
         </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon-sm" aria-label="Survey actions">
-              <MoreHorizontalIcon />
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Survey actions"
+              disabled={working !== null}
+            >
+              {working ? (
+                <Loader2Icon className="animate-spin" />
+              ) : (
+                <MoreHorizontalIcon />
+              )}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-52">
-            <DropdownMenuItem onSelect={() => exportSurveyToPdf(survey)}>
+            <DropdownMenuItem
+              onSelect={() => run("pdf", () => exportSurveyToPdf(survey))}
+            >
               <FileDownIcon />
               Export to PDF
             </DropdownMenuItem>
 
             <DropdownMenuItem
-              onSelect={async () => {
-                const clone = await cloneSurvey(survey.id);
-                if (clone) router.push(`/surveys/${clone.id}/configure`);
-              }}
+              onSelect={() =>
+                run("clone", async () => {
+                  const clone = await cloneSurvey(survey.id);
+                  if (clone) router.push(`/surveys/${clone.id}/configure`);
+                })
+              }
             >
               <CopyPlusIcon />
               Clone
@@ -178,7 +202,7 @@ export function SurveyRow({
                     "Do you really want to delete this survey? This operation can't be undone.",
                   )
                 ) {
-                  void deleteSurvey(survey.id);
+                  void run("delete", () => deleteSurvey(survey.id));
                 }
               }}
             >
