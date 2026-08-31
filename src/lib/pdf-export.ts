@@ -16,6 +16,7 @@ export async function exportSurveyToPdf(
   survey: DemoSurvey,
   data?: SurveyData,
 ): Promise<void> {
+  await import("@/lib/surveyjs-license");
   const { SurveyPDF } = await import("survey-pdf");
   const pdf = new SurveyPDF(survey.json, {
     fontSize: 12,

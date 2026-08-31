@@ -5,6 +5,7 @@ import { SurveyCreator, SurveyCreatorComponent } from "survey-creator-react";
 import type { ICreatorOptions } from "survey-creator-core";
 import { findSurvey, saveSurveyJson } from "@/storage/survey-json";
 
+import "@/lib/surveyjs-license";
 import "survey-core/survey-core.css";
 import "survey-creator-core/survey-creator-core.css";
 

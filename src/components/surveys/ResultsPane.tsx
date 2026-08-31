@@ -6,6 +6,7 @@ import { VisualizationPanel } from "survey-analytics";
 import type { SurveyJSON } from "@/schemas";
 import { useResults } from "@/hooks/useWorkspace";
 
+import "@/lib/surveyjs-license";
 import "survey-analytics/survey.analytics.css";
 
 export default function ResultsPane({
