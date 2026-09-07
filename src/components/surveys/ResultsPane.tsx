@@ -46,7 +46,7 @@ export default function ResultsPane({
   if (data.length === 0) {
     return (
       <div className="text-muted-foreground rounded-lg border px-6 py-16 text-center text-sm">
-        No responses yet. Run the survey to collect some.
+        No responses yet. Run the form to collect some.
       </div>
     );
   }

@@ -73,7 +73,7 @@ test("a survey can be created, renamed and deleted in the browser", async ({
 }) => {
   test.slow();
   await page.goto("/surveys");
-  await page.getByRole("button", { name: "Create a Survey" }).first().click();
+  await page.getByRole("button", { name: "Create a Form" }).first().click();
 
   // A new survey opens straight in the Creator, exactly like on My Forms.
   await expect(page).toHaveURL(/\/surveys\/survey-1\/configure$/);
@@ -82,10 +82,10 @@ test("a survey can be created, renamed and deleted in the browser", async ({
   });
 
   await page.goto("/surveys");
-  await expect(page.getByText("New Survey", { exact: true })).toBeVisible();
+  await expect(page.getByText("New Form", { exact: true })).toBeVisible();
 
-  await page.getByRole("button", { name: "Rename survey" }).first().click();
-  await page.getByPlaceholder("Enter a survey name...").fill("Renamed by e2e");
+  await page.getByRole("button", { name: "Rename form" }).first().click();
+  await page.getByPlaceholder("Enter a form name...").fill("Renamed by e2e");
   await page.getByRole("button", { name: "Save name" }).click();
   await expect(page.getByText("Renamed by e2e")).toBeVisible();
 
@@ -96,7 +96,7 @@ test("a survey can be created, renamed and deleted in the browser", async ({
   await expect(page.getByText("Renamed by e2e")).toBeVisible();
 
   page.once("dialog", (dialog) => dialog.accept());
-  await page.getByRole("button", { name: "Survey actions" }).first().click();
+  await page.getByRole("button", { name: "Form actions" }).first().click();
   await page.getByRole("menuitem", { name: "Delete" }).click();
   await expect(page.getByText("Renamed by e2e")).toHaveCount(0);
 });

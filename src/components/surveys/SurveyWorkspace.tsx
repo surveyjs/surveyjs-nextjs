@@ -51,7 +51,7 @@ export function SurveyWorkspace({
   if (!survey) {
     return (
       <div className="mx-auto max-w-lg py-24 text-center">
-        <h1 className="text-lg font-semibold">Survey not found</h1>
+        <h1 className="text-lg font-semibold">Form not found</h1>
         <p className="text-muted-foreground mt-2 text-sm">
           It may have been deleted from this browser&apos;s workspace.
         </p>

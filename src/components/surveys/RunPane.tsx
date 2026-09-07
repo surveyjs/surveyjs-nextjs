@@ -38,7 +38,7 @@ export default function RunPane({ survey }: { survey: DemoSurvey }) {
       <SurveyForm
         schema={survey.json}
         onComplete={onComplete}
-        completedMessage="Thank you. Your response has been added to this survey's results."
+        completedMessage="Thank you. Your response has been added to this form's results."
       />
     </div>
   );

@@ -39,7 +39,7 @@ export function SurveysPage() {
           </Button>
           <Button size="sm" onClick={create} disabled={creating}>
             {creating ? <Loader2Icon className="animate-spin" /> : <PlusIcon />}
-            Create a Survey
+            Create a Form
           </Button>
         </div>
       </div>
@@ -48,11 +48,11 @@ export function SurveysPage() {
         {surveys.length === 0 ? (
           <div className="flex flex-col items-center gap-4 px-6 py-16 text-center">
             <p className="text-muted-foreground text-sm">
-              No surveys yet. Create your first one to get started.
+              No forms yet. Create your first one to get started.
             </p>
             <Button onClick={create} disabled={creating}>
               {creating ? <Loader2Icon className="animate-spin" /> : <PlusIcon />}
-              Create a Survey
+              Create a Form
             </Button>
           </div>
         ) : (

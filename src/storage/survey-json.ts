@@ -60,8 +60,8 @@ function patch(id: string, apply: (survey: DemoSurvey) => DemoSurvey): void {
 export async function createSurvey(): Promise<DemoSurvey> {
   const survey: DemoSurvey = {
     id: uniqueId("survey"),
-    name: "New Survey",
-    json: { title: "New Survey", pages: [{ name: "page1", elements: [] }] },
+    name: "New Form",
+    json: { title: "New Form", pages: [{ name: "page1", elements: [] }] },
     createdAt: today(),
     updatedAt: today(),
   };

@@ -89,7 +89,7 @@ export function SurveyRow({
             <Button
               variant="ghost"
               size="icon-xs"
-              aria-label="Rename survey"
+              aria-label="Rename form"
               onClick={() => setEditingName(survey.name)}
             >
               <PencilIcon />
@@ -100,7 +100,7 @@ export function SurveyRow({
             <Input
               autoFocus
               value={editingName}
-              placeholder="Enter a survey name..."
+              placeholder="Enter a form name..."
               onChange={(event) => setEditingName(event.target.value)}
               onKeyDown={(event) => {
                 if (event.key === "Enter") commitRename();
@@ -162,7 +162,7 @@ export function SurveyRow({
             <Button
               variant="ghost"
               size="icon-sm"
-              aria-label="Survey actions"
+              aria-label="Form actions"
               disabled={working !== null}
             >
               {working ? (
@@ -199,7 +199,7 @@ export function SurveyRow({
               onSelect={() => {
                 if (
                   window.confirm(
-                    "Do you really want to delete this survey? This operation can't be undone.",
+                    "Do you really want to delete this form? This operation can't be undone.",
                   )
                 ) {
                   void run("delete", () => deleteSurvey(survey.id));
