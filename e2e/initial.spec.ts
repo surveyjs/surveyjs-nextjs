@@ -60,6 +60,31 @@ test("the Creator loads for a seeded survey", async ({ page }) => {
   });
 });
 
+test("the Creator's JSON tab uses Monaco and follows dark mode", async ({
+  page,
+}) => {
+  test.slow();
+  const problems = captureProblems(page);
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.goto(`/surveys/${SEED_SURVEY}/configure`);
+  await page
+    .getByRole("tab", { name: "JSON Editor" })
+    .click({ timeout: 30_000 });
+
+  const editor = page.locator(".monaco-editor");
+  await expect(editor).toHaveCount(1);
+  await expect(editor.locator(".view-lines")).toContainText('"pages"');
+  await expect(editor).toHaveClass(/(^|\s)vs(\s|$)/);
+
+  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  await expect(editor).toHaveClass(/(^|\s)vs-dark(\s|$)/);
+
+  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  await expect(editor).toHaveClass(/(^|\s)vs(\s|$)/);
+
+  expect(problems).toHaveLength(0);
+});
+
 test("the dashboard charts the seeded responses", async ({ page }) => {
   test.slow();
   await page.goto(`/surveys/${SEED_SURVEY}/results`);
