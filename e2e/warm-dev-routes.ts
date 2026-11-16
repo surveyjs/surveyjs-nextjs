@@ -1,40 +1,15 @@
-/**
- * Compile every route before the suite starts.
- *
- * `next dev` builds a route the first time it is requested. With eight workers
- * hitting cold routes at once, some of those first requests come back as 500s
- * that have nothing to do with the app. One sequential pass up front makes the
- * run deterministic.
- */
-const ROUTES = [
-  "/",
-  "/surveys",
-  "/surveys/insurance-claim/configure",
-  "/surveys/insurance-claim/run",
-  "/surveys/insurance-claim/results",
-];
+// The dev run's global setup: request every page once, so Turbopack compiles it before the specs run. Without it,
+// the first spec to open each example waits for the compile and can time out. Each page answers 200 once compiled.
+import type { FullConfig } from "@playwright/test";
+import { readFileSync } from "node:fs";
 
-async function waitForServer(baseUrl: string): Promise<void> {
-  const deadline = Date.now() + 180_000;
-  while (Date.now() < deadline) {
-    try {
-      await fetch(baseUrl);
-      return;
-    } catch {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-    }
-  }
-  throw new Error(`Dev server at ${baseUrl} never came up.`);
-}
-
-export default async function warmDevRoutes(): Promise<void> {
-  const baseUrl = process.env.E2E_BASE_URL ?? "http://localhost:3100";
-  await waitForServer(baseUrl);
-  for (const route of ROUTES) {
-    const response = await fetch(`${baseUrl}${route}`);
-    if (!response.ok && response.status !== 307) {
-      throw new Error(`Warm-up failed for ${route}: ${response.status}`);
-    }
-    await response.text();
+export default async function warmDevRoutes(config: FullConfig) {
+  const baseURL = config.projects[0]?.use.baseURL ?? "http://127.0.0.1:8000";
+  const manifest = JSON.parse(readFileSync("surveyjs-integration.json", "utf8")) as { steps: { page: string }[] };
+  const paths = ["/", "/claim", "/examples/server-pdf/loading", ...manifest.steps.map((step) => step.page), "/up", "/demo/stored/save-response"];
+  for (const path of paths) {
+    const started = Date.now();
+    const response = await fetch(baseURL + path, { headers: { Cookie: "demo_user=alice" } }).catch(() => null);
+    console.log(`warm ${path}: ${response?.status ?? "failed"} in ${Date.now() - started} ms`);
   }
 }

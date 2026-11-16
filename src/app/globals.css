@@ -1,17 +1,51 @@
+/* The site stylesheet: Tailwind CSS v4 with Preflight (shadcn/ui needs it), the SurveyJS site's design from
+   shared/ui/theme.css, then shadcn's tokens set to the SurveyJS brand. Light mode only: the reference has no dark mode.
+   The SurveyJS styles (survey-core, Creator, Dashboard and the shadcn adapter) load in each page type's client
+   component, after this file. */
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
+/* The design tokens, base rules, scrollbars, highlights and marquee every platform shares (Lato, the grays, the
+   SurveyJS colours). Its @theme static block also sets --color-primary, --color-foreground and --color-destructive
+   for the Tailwind adapter; the @theme inline block below maps them to shadcn's tokens, which take the same values. */
+@import "../../shared/ui/theme.css";
 
-/* Dark mode is driven by the `.dark` class on <html> (next-themes,
-   attribute="class"). The custom variant mirrors the canonical shadcn demo. */
-@custom-variant dark (&:is(.dark *));
+/* The pages, and the shared modules, which set classes too */
+@source "../**/*.tsx";
+@source "../../shared/ui/*.js";
 
-/* Map the shadcn design tokens onto Tailwind color/radius utilities. Because
-   these reference the runtime CSS variables (not literals), every utility
-   (`bg-background`, `text-foreground`, `rounded-lg`, …) re-resolves instantly
-   when the active visual style or light/dark mode flips a variable.
-   Mirrors shared/src/shadcn-neutral-theme.css + tailwind-theme.css from the
-   canonical demo (C:\survey.js\Examples\css-bridges\demos\shadcn). */
+/* shadcn/ui's tokens (base-nova, neutral), with the SurveyJS brand: #19b394 for primary and ring, the SurveyJS red,
+   the reference's text colour and Lato. The SurveyJS shadcn adapter reads the same variables, so the forms,
+   Creator and the Dashboard take the brand from here. */
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: var(--color-gray-800);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--color-gray-800);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--color-gray-800);
+  --primary: var(--color-sjs);
+  --primary-foreground: #ffffff;
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: var(--color-sjs-red);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: var(--color-sjs);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+}
+
+/* The utilities (bg-primary, text-muted-foreground…) read shadcn's variables. --font-sans stays theme.css's Lato. */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -36,115 +70,17 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --color-sidebar: var(--sidebar);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-ring: var(--sidebar-ring);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-}
-
-/* ──────────────────────────────────────────────────────────────────────────
-   Base palette — shadcn neutral (baseColor: "neutral"). This is the "default"
-   visual style; the per-style presets below only layer deltas on top.
-   ────────────────────────────────────────────────────────────────────────── */
-:root {
-  --radius: 0.625rem;
-  --spacing: 0.25rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
-/* base-nova — rounder panels. */
-:root {
-  --radius: 0.85rem;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-
   body {
     @apply bg-background text-foreground;
-  }
-
-  /* Tailwind v4 drops the browser default; put it back so every control reads
-     as clickable. */
-  button:not(:disabled),
-  [role="button"]:not(:disabled) {
-    cursor: pointer;
   }
 }

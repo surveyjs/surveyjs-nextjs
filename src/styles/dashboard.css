@@ -1,0 +1,11 @@
+/* The SurveyJS styles of the Dashboard page, after the site stylesheet: survey-core, survey-analytics, the shadcn
+   adapter for the base-nova style (one file at 3.2.3), then the Dashboard's font rule. */
+@import "survey-core/survey-core.css";
+@import "survey-analytics/survey.analytics.css";
+@import "survey-core/themes/adapters/shadcn-base-nova.css";
+
+/* The adapter sets the font only inside .sjs-theme-overrides, which the Dashboard never gets: without this rule its
+   controls fall back to Open Sans and its chart labels to a serif font */
+.sd-theme-root {
+  --sjs2-typography-font-family-text: var(--font-sans);
+}

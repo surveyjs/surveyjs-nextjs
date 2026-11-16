@@ -1,0 +1,21 @@
+/* Demo only, loaded after the SurveyJS shadcn adapter on the pages that run a form.
+   The example page pads the form inside its card (#form, p-4 sm:p-6 in the example layout), so the survey title,
+   page titles, fields and navigation buttons all start at the card's padding edge, as in the reference.
+   Panels keep their own inner padding. Each rule is a layout choice of this page, not a gap in the adapter. */
+.sjs-theme-overrides {
+  /* SurveyJS 3.2.3: leave space inside the scroll area for navigation hover and focus outlines. */
+  --sjs2-layout-component-survey-footer-padding-bottom: 4px;
+  --sjs2-layout-component-page-content-area-padding-horizontal: 0px;
+  --sjs2-layout-component-survey-footer-padding-horizontal: 0px;
+  --sjs2-layout-component-survey-header-padding-horizontal: 0px;
+  --sjs2-layout-component-page-header-padding-horizontal: 0px;
+}
+
+/* A gap in the shadcn adapter (SurveyJS fix, reported): under 600px survey-core swaps the header content for
+   .sv-header--mobile with a fixed 24px padding that no layout token feeds. survey-core/themes/adapters/tailwind4.css
+   has this rule at 3.2.3; shadcn-base-nova.css doesn't. The same rule, so the survey title stays aligned with the
+   fields at every width, as in the reference. Delete it once the shadcn adapter has it. */
+.sjs-theme-overrides .sv-header--mobile {
+  padding-top: calc(var(--sjs2-layout-component-survey-header-padding-top) + var(--sjs2-layout-component-survey-box-padding-top));
+  padding-inline: var(--sjs2-layout-component-survey-header-padding-horizontal);
+}
