@@ -32,7 +32,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
         <span className="text-gray-600">JSON schema</span>
         <span className="box-border inline-flex min-h-9 max-w-full items-stretch rounded-lg border bg-background p-0.5">
           {VERSIONS.map(([v, label]) => (
-            <a key={v} data-definition-version href={`?version=${v}`} aria-current={version === v ? "page" : undefined}
+            <a key={v} data-definition-version="" href={`?version=${v}`} aria-current={version === v ? "page" : undefined}
                className={cn("flex items-center rounded-md px-2.5 py-1 no-underline aria-disabled:opacity-50", version === v ? "bg-primary text-primary-foreground" : "text-gray-700 hover:bg-muted")}>{label}</a>
           ))}
         </span>

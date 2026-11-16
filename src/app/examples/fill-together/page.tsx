@@ -53,7 +53,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
             <NativeSelectOption value="technician">Technician</NativeSelectOption>
           </NativeSelect>
         </label>
-        <a data-invite-link target="_blank" href={`/examples/fill-together?${partner}`} className={cn(buttonVariants(), "h-9 gap-1.5 px-3 font-semibold no-underline")}>
+        <a data-invite-link="" target="_blank" href={`/examples/fill-together?${partner}`} className={cn(buttonVariants(), "h-9 gap-1.5 px-3 font-semibold no-underline")}>
           Open a second window
           <svg aria-hidden="true" className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg>
         </a>

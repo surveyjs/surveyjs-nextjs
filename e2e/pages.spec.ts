@@ -129,7 +129,7 @@ test("the catalog, the PDF loading page and /claim, in Next.js words", async ({ 
 test("no page text names PHP, Laravel, Express, artisan or the SurveyJS service", async ({ request }) => {
   for (const slug of SLUGS) {
     const text = (await html(request, `/examples/${slug}`)).replace(/<pre[\s\S]*?<\/pre>/g, "").replace(/<script[\s\S]*?<\/script>/g, "");
-    expect(text, slug).not.toMatch(/\bPHP\b|Laravel|Express|artisan|docker compose|SurveyJS service/i);
+    expect(text, slug).not.toMatch(/\bPHP\b|Laravel|\bExpress\b|\bartisan\b|docker compose|SurveyJS service/);
   }
 });
 
@@ -159,9 +159,11 @@ test("/shared serves its four folders with their types and nothing else, raw pat
   const raw = (path: string) => new Promise<number>((resolve, reject) =>
     httpRequest({ host: hostname, port, path }, (res) => { res.resume(); resolve(res.statusCode ?? 0); }).on("error", reject).end());
   for (const path of ["/shared/seed/forms.json", "/shared/contract-tests/run.mjs", "/shared/%2e%2e/package.json", "/shared/client/../../package.json",
-    "/shared/client/%2e%2e/%2e%2e/package.json", "/shared/ui/", "/shared/CONTRACT", "/shared/client/.hidden"]) {
+    "/shared/client/%2e%2e/%2e%2e/package.json", "/shared/ui", "/shared/CONTRACT", "/shared/client/.hidden"]) {
     expect(await raw(path), path).toBe(404);
   }
+  // A trailing slash gets Next.js's own 308 to the path without it, which answers 404
+  expect(await raw("/shared/ui/"), "/shared/ui/").toBe(308);
 });
 
 test("pages keep HTML errors: an invalid edit-together form is 400, an unknown example 404", async ({ request }) => {

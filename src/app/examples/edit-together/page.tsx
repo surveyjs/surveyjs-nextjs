@@ -42,7 +42,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
         {/* The reference binds the picker as soon as the page is parsed: this works before hydration and before
             Creator loads. A blank form gets a new ID. */}
         <script dangerouslySetInnerHTML={{ __html: 'document.getElementById("shared-form").addEventListener("change", (e) => { const url = new URL(location.href); url.searchParams.set("form", e.target.value || `team-${crypto.randomUUID()}`); location.assign(url); });' }} />
-        <a data-invite-link target="_blank" href="#" className={cn(buttonVariants(), "h-9 gap-1.5 px-3 font-semibold no-underline")}>
+        <a data-invite-link="" target="_blank" href="#" className={cn(buttonVariants(), "h-9 gap-1.5 px-3 font-semibold no-underline")}>
           Open a second window
           <svg aria-hidden="true" className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></svg>
         </a>

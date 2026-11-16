@@ -204,7 +204,7 @@ export function ExampleLayout({ data, description, tryThis, about, banner, actio
           <div id="panel-code" role="tabpanel" aria-labelledby="tab-code" hidden className="p-4 text-sm lg:p-6">
             <div className="grid gap-4">
               {data.codeDefinitions.map((definition) => (
-                <details key={definition.path} data-definition-code className="min-w-0 overflow-hidden rounded-lg border border-gray-800 bg-[#0d1117]">
+                <details key={definition.path} data-definition-code="" className="min-w-0 overflow-hidden rounded-lg border border-gray-800 bg-[#0d1117]">
                   <summary className="cursor-pointer px-4 py-3 text-xs text-gray-300 hover:bg-gray-800/60 focus-visible:outline-2 focus-visible:outline-sjs">
                     <span className="inline-flex w-[calc(100%_-_1rem)] flex-wrap items-center justify-between gap-2 align-middle">
                       <span className="[overflow-wrap:anywhere]"><span className="font-semibold text-white">JSON definition</span> · <code>{definition.path}</code></span>
@@ -215,7 +215,7 @@ export function ExampleLayout({ data, description, tryThis, about, banner, actio
                 </details>
               ))}
               {data.codePanel.map((region) => (
-                <details key={region.id} data-code-section open className="min-w-0 overflow-hidden rounded-lg border border-gray-800 bg-[#0d1117]">
+                <details key={region.id} data-code-section="" open className="min-w-0 overflow-hidden rounded-lg border border-gray-800 bg-[#0d1117]">
                   <summary className="cursor-pointer px-4 py-2 text-xs text-gray-300 hover:bg-gray-800/60 focus-visible:outline-2 focus-visible:outline-sjs">
                     <span className="inline-flex w-[calc(100%_-_1rem)] flex-wrap items-center justify-between gap-2 align-middle">
                       <span className="[overflow-wrap:anywhere]">

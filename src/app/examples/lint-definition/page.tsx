@@ -34,9 +34,10 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
         <div role="group" aria-labelledby="sample-schema-label" className="flex w-full flex-col gap-2">
           <span id="sample-schema-label" className="font-semibold text-gray-600">Load a sample schema</span>
           <div className="flex flex-wrap items-center gap-2">
-            <button type="button" data-lint="broken-reference" className={button}>Broken reference</button>
-            <button type="button" data-lint="invalid-expression" className={button}>Invalid expression</button>
-            <button type="button" data-lint="unreachable-condition" className={button}>Unreachable condition</button>
+            {/* Disabled until client.tsx has loaded Creator and bound them: the reference binds them as soon as the page is parsed */}
+            <button type="button" data-lint="broken-reference" disabled className={button}>Broken reference</button>
+            <button type="button" data-lint="invalid-expression" disabled className={button}>Invalid expression</button>
+            <button type="button" data-lint="unreachable-condition" disabled className={button}>Unreachable condition</button>
           </div>
         </div>
       </>}

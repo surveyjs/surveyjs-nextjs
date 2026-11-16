@@ -29,7 +29,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
       form={<>
         <ul className="m-0 list-none divide-y p-0">
           {claims.length ? claims.map((claim) => (
-            <li key={claim.id} data-claim-row className="px-4 py-4 text-sm">
+            <li key={claim.id} data-claim-row="" className="px-4 py-4 text-sm">
               <div className="flex flex-wrap items-start justify-between gap-3 lg:grid lg:grid-cols-[minmax(0,1fr)_auto]">
                 <details className="min-w-0 flex-1 basis-64 lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:grid lg:grid-cols-subgrid lg:[&::details-content]:col-span-2">
                   <summary className="cursor-pointer break-words py-2 font-semibold lg:col-start-1">Claim #{claim.id} · {claim.label}</summary>
