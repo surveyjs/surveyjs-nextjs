@@ -1,0 +1,7 @@
+/* The SurveyJS styles of a Creator page, after the site stylesheet: survey-core, Creator, Creator's collaboration
+   styles, the shadcn adapter for the base-nova style (one file at 3.2.3), then this app's overrides. */
+@import "survey-core/survey-core.css";
+@import "survey-creator-core/survey-creator-core.css";
+@import "survey-creator-core/collaboration.css";
+@import "survey-core/themes/adapters/shadcn-base-nova.css";
+@import "./survey-overrides.css";

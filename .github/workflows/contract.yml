@@ -1,0 +1,121 @@
+# Checks that this repository still matches the backend integration docs (contract server-integration-v4): the
+# manifest, regions and types, ESLint, node --test (every row of the in-process mapping, mocked), next build, the
+# shared contract test with the AI off and with the AI stub and every switch on, the smoke test and the browser tests
+# (the shared specs and this platform's, in production mode). Run Server-Side Workflows and the relays run in this
+# app, so nothing needs Docker except the image job, which builds and starts the image.
+# SurveyJS's own CI (azure-pipelines.yml) runs the browser tests against its nightly builds; this workflow pins them.
+name: Contract
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  contract:
+    name: Node 26 on Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "26"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Manifest, regions, shared/, versions and tsc --noEmit
+        run: npm run check -- --complete
+
+      - name: ESLint
+        run: npm run lint
+
+      - name: node --test
+        run: npm test
+
+      - name: next build
+        run: npm run build
+
+      - name: Contract test, AI off
+        run: npm run contract -- --no-build
+        env:
+          AI: "off"
+
+      - name: Contract test, AI stub and every switch on
+        run: npm run contract -- --no-build
+        env:
+          AI: stub
+          VALIDATE_RESPONSES: "true"
+          LINT_DEFINITIONS: "true"
+          DEMO_MODE: "true"
+
+      - name: Smoke test
+        run: npm run contract -- --no-build --smoke
+
+      # host.ts, page-tabs.js and the React pages in a real browser: what node --test and the contract test never run
+      - name: Browser tests (Chromium, production mode)
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+  matrix:
+    name: Node ${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-latest, node: "24" }
+          - { os: windows-latest, node: "26" }   # the process handling: free ports, kill(), no signals
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+      - name: Contract test, AI stub
+        run: npm run contract -- --no-build
+        env:
+          AI: stub
+
+  image:
+    name: Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build and start the image alone
+        run: |
+          docker build -t surveyjs-nextjs .
+          docker run -d --name app -p 8000:8000 surveyjs-nextjs
+
+      - name: It answers /up
+        run: curl -sf --retry 30 --retry-delay 1 --retry-all-errors http://127.0.0.1:8000/up
+
+      - name: Behind a TLS proxy it uses https and wss
+        run: |
+          page=$(curl -sf -H 'X-Forwarded-Proto: https' http://127.0.0.1:8000/examples/fill-together)
+          echo "$page" | grep -q '<link rel="canonical" href="https://127.0.0.1:8000/examples/fill-together"/>'
+          echo "$page" | grep -q '"url":"wss://127.0.0.1:8000"'
+
+      - name: Production mode, and sharp loads
+        run: |
+          test "$(docker exec app node -e 'console.log(process.env.NODE_ENV)')" = production
+          docker exec app node -e "import('sharp').then(() => console.log('sharp ok'))"
+
+      - name: Logs
+        if: failure()
+        run: docker logs app

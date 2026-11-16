@@ -1,0 +1,8 @@
+/* The SurveyJS styles of a form page, after the site stylesheet: survey-core, its collaboration styles, the shadcn
+   adapter for the base-nova style, then this app's overrides. At SurveyJS 3.2.3 the adapter is one file per style:
+   shadcn-base-nova.css holds the shared shadcn base too (there is no separate shadcn.css). Imported from CSS, not
+   from a module, so Next.js never tries to load survey-core's CSS on the server. */
+@import "survey-core/survey-core.css";
+@import "survey-core/collaboration.css";
+@import "survey-core/themes/adapters/shadcn-base-nova.css";
+@import "./survey-overrides.css";
