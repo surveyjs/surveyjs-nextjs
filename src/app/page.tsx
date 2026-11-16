@@ -28,7 +28,8 @@ const STACK_LOGOS = ["nextjs", "nodejs", "aspnet", "php", "wordpress", "model", 
 
 const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const solidUnderline = "underline [text-decoration-skip-ink:none] [text-underline-position:from-font]";
-const column = "mx-auto max-w-sjs-content px-4 md:px-6";
+/** The content is sjs-content wide, the padding outside it: Preflight makes boxes border-box, the other platforms don't load it */
+const column = "mx-auto box-content max-w-sjs-content px-4 md:px-6";
 /** The licence badges: the manifest's licence reads "MIT", "Commercial" or "Commercial client", maybe ", needs an AI provider" */
 const cardBadge = "h-auto rounded-lg px-3 py-1 text-base/6 font-semibold";
 const LICENCE_BADGE: Record<string, string> = { MIT: "bg-sjs-10 text-sjs", Commercial: "bg-sjs-yellow-10 text-sjs-yellow" };
