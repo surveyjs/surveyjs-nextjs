@@ -19,3 +19,12 @@
   padding-top: calc(var(--sjs2-layout-component-survey-header-padding-top) + var(--sjs2-layout-component-survey-box-padding-top));
   padding-inline: var(--sjs2-layout-component-survey-header-padding-horizontal);
 }
+
+/* A gap in the shadcn adapter (SurveyJS fix, to report): it folds a card's top padding into the panel header
+   (header padding-top: the card spacing; content padding-top: 0), but a panel with no title or description renders
+   no .sd-panel__header, so its first question sits on the card's top edge. survey-core/themes/adapters/tailwind4.css
+   pads the content itself, so the reference doesn't need this. Here the content takes the card's edge spacing, as
+   shadcn's <Card> pads a card without a <CardHeader>. Delete it once the shadcn adapter does the same. */
+.sjs-theme-overrides .sd-panel--with-frame:not(:has(> .sd-panel__header)) {
+  --sjs2-layout-component-panel-content-area-padding-top: var(--sjs2-shadcn-card-edge-spacing);
+}
