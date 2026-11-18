@@ -4,7 +4,7 @@
   "framework": "nextjs",
   "repo": "surveyjs/surveyjs-nextjs",
   "branch": "main",
-  "surveyjsVersion": "3.2.3",
+  "surveyjsVersion": "3.2.7",
   "serverSideWorkflows": "in-process",
   "steps": [
     {
