@@ -14,7 +14,7 @@ RUN npm run build
 # ---- Run: production dependencies, the build output, and the sources the app reads at run time
 FROM node:26-slim
 WORKDIR /app
-ENV NODE_ENV=production APP_HOST=0.0.0.0 APP_PORT=8000 DATA_DIR=/app/storage
+ENV NODE_ENV=production APP_HOST=0.0.0.0 DATA_DIR=/app/storage
 
 COPY package.json package-lock.json .npmrc ./
 RUN npm ci --omit=dev && npm cache clean --force
