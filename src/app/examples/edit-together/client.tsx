@@ -7,8 +7,8 @@ import { SurveyJsView, type View } from "@/components/example/surveyjs-view";
 import { createSchemaSaver, responseError } from "@/demo/schema-saver";
 import { useMountTask } from "@/lib/use-mount-task";
 import { useState } from "react";
-import type { CollaborationPlugin as Collaboration, IJournalRecord, IPresencePeerEntry } from "survey-creator-core/collaboration";
-import type { SurveyCreator as Creator } from "survey-creator-react";
+import { CollaborationPlugin, type IJournalRecord, type IPresencePeerEntry } from "survey-creator-core/collaboration";
+import { SurveyCreator } from "survey-creator-react";
 
 type InitMessage = { type: "init"; clientId: string; seed: Record<string, unknown>; log: IJournalRecord[] };
 type RelayMessage = InitMessage
@@ -20,14 +20,11 @@ type RelayMessage = InitMessage
 export default function EditTogether() {
   // A reconnect builds a new Creator: the key mounts a fresh component for it
   const [state, setState] = useState<{ view: View; key: number }>({ view: null, key: 0 });
-  useMountTask((active) => start((view) => setState((current) => ({ view, key: current.key + 1 })), active));
+  useMountTask(() => start((view) => setState((current) => ({ view, key: current.key + 1 }))));
   return <SurveyJsView key={state.key} view={state.view} />;
 }
 
-async function start(render: (view: View) => void, active: () => boolean) {
-  // Creator and its collaboration plugin touch window when they are imported
-  const [{ SurveyCreator }, { CollaborationPlugin }] = await Promise.all([import("survey-creator-react"), import("survey-creator-core/collaboration")]);
-  if (!active()) return;
+function start(render: (view: View) => void) {
   const page = getPage();
   const formId = (page.formId as string | undefined) ?? "support-team";
   const userName = participantName();
@@ -41,8 +38,8 @@ async function start(render: (view: View) => void, active: () => boolean) {
   const listeners = new AbortController();
   const { signal } = listeners;
   let ws: WebSocket | undefined;
-  let creator!: Creator;
-  let collab!: Collaboration;
+  let creator!: SurveyCreator;
+  let collab!: CollaborationPlugin;
   let saver!: ReturnType<typeof createSchemaSaver>;
   let localCopy: unknown;
   let ready = false;

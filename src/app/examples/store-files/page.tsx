@@ -26,7 +26,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
           <p data-show="sizes" className="m-0 text-muted-foreground">Upload a file to compare response sizes.</p>
           <p data-show="file-status" role="status" aria-live="polite" className="m-0 text-muted-foreground"></p>
         </div>
-        <div id="form" className="p-4 sm:p-6"><StoreFiles /></div>
+        <div id="form" className="p-4 sm:p-6"><StoreFiles definition={data.page.definition} /></div>
       </>}
     />
   );

@@ -24,7 +24,7 @@
     "type": "git",
     "url": "git+https://github.com/surveyjs/surveyjs-nextjs.git"
   },
-  "license": "https://surveyjs.io/licensing",
+  "license": "MIT",
   "dependencies": {
     "@anthropic-ai/sdk": "~0.90.0",
     "@base-ui/react": "^1.9.0",

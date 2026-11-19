@@ -1,14 +1,11 @@
 "use client";
-// Demo only: renders what an example's start-up code created, in place of shared/client/host.js's mountSurvey() and
-// survey-creator-js's renderSurveyCreator(): a form (survey-react-ui's <Survey>) or Survey Creator
-// (survey-creator-react's <SurveyCreatorComponent>). Both render in the browser only: SurveyJS numbers its elements
-// as it creates them, and Creator touches window when it is imported.
-import dynamic from "next/dynamic";
+// Demo only: renders what an example's start-up code created in the browser, in place of shared/client/host.js's
+// mountSurvey() and survey-creator-js's renderSurveyCreator(): a form (survey-react-ui's <Survey>) or Survey Creator
+// (survey-creator-react's <SurveyCreatorComponent>). The pages whose form comes with the page render <Survey> from
+// their own client component, on the server too.
 import type { Model } from "survey-core";
-import type { SurveyCreator } from "survey-creator-react";
-
-const Survey = dynamic(() => import("survey-react-ui").then((m) => m.Survey), { ssr: false });
-const SurveyCreatorComponent = dynamic(() => import("survey-creator-react").then((m) => m.SurveyCreatorComponent), { ssr: false });
+import { SurveyCreatorComponent, type SurveyCreator } from "survey-creator-react";
+import { Survey } from "survey-react-ui";
 
 export type View = { survey: Model } | { creator: SurveyCreator } | null;
 

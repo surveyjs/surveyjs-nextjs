@@ -32,7 +32,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
           </dl>
           <button id="retry-checks" type="button" hidden className={cn(buttonVariants({ variant: "outline" }), "h-9 px-3 font-semibold")}>Retry checks</button>
         </div>
-        <div id="form" className="p-4 sm:p-6"><AsyncFunctions /></div>
+        <div id="form" className="p-4 sm:p-6"><AsyncFunctions definition={data.page.definition} /></div>
       </>}
     />
   );

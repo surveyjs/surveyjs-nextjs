@@ -1,12 +1,12 @@
 "use client";
 // Load Choices from Web: choicesByUrl loads the office and country lists, with an auth header on every request
 // (shared/client/choices-from-web.js in React), then the answers are saved as in Save Responses.
-import { getPage, setStoredQuery } from "@/demo/host";   // first: the requests log wraps fetch and XHR before the example runs
+import { setStoredQuery } from "@/demo/host";   // first: the requests log wraps fetch and XHR before the example runs
 import "@/styles/form.css";
-import { SurveyJsView, type View } from "@/components/example/surveyjs-view";
 import { useMountTask } from "@/lib/use-mount-task";
 import { useState } from "react";
 import { Model, type CompleteEvent, type ValueChangedEvent } from "survey-core";
+import { Survey } from "survey-react-ui";
 
 // Demo only: a stand-in for the access token your app already has
 const token = "demo-token";
@@ -24,16 +24,13 @@ settings.web.onBeforeRequestChoices = (_, options) => {
 };
 // #endregion
 
-export default function ChoicesFromWeb() {
-  const [view, setView] = useState<View>(null);
-  useMountTask(() => start(setView));
-  return <SurveyJsView view={view} />;
+export default function ChoicesFromWeb({ definition }: { definition: Record<string, unknown> }) {
+  const [survey] = useState(() => new Model(definition));   // one model per mount, never per render; the server renders it too
+  useMountTask(() => start(survey));
+  return <Survey model={survey} />;
 }
 
-function start(render: (view: View) => void) {
-  const survey = new Model(getPage().definition);
-  render({ survey });
-
+function start(survey: Model) {
   // Clear the previous selection immediately, before the new office list arrives
   const clearOffice = (sender: Model, { name }: ValueChangedEvent) => {
     if (name === "region") sender.clearValue("office");

@@ -4,6 +4,7 @@
 import { getPage } from "@/demo/host";   // first: the requests log wraps fetch before the example runs
 import "@/styles/creator.css";
 import { SurveyJsView, type View } from "@/components/example/surveyjs-view";
+import { SurveyCreator } from "survey-creator-react";
 import { createSchemaSaver, responseError } from "@/demo/schema-saver";
 import { useMountTask } from "@/lib/use-mount-task";
 import { useState } from "react";
@@ -13,13 +14,11 @@ type Preset = { name: string; variables: Record<string, unknown> };
 
 export default function VariablePresets() {
   const [view, setView] = useState<View>(null);
-  useMountTask((active) => start(setView, active));
+  useMountTask(() => start(setView));
   return <SurveyJsView view={view} />;
 }
 
-async function start(render: (view: View) => void, active: () => boolean) {
-  const { SurveyCreator } = await import("survey-creator-react");   // Creator touches window when it is imported
-  if (!active()) return;
+async function start(render: (view: View) => void) {
   const page = getPage();
   const formId = "support";
   const element = document.getElementById("creator")!;

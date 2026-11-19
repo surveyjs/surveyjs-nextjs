@@ -1,23 +1,21 @@
 "use client";
 // Store Files Separately: uploads go to the backend, the response keeps only their IDs, and previews are fetched
 // through the download endpoint (shared/client/store-files.js in React). The demo compares the response sizes.
-import { getPage, note, onRequest, setStoredQuery, show } from "@/demo/host";   // first: the requests log wraps fetch before the example runs
+import { note, onRequest, setStoredQuery, show } from "@/demo/host";   // first: the requests log wraps fetch before the example runs
 import "@/styles/form.css";
-import { SurveyJsView, type View } from "@/components/example/surveyjs-view";
 import { useMountTask } from "@/lib/use-mount-task";
 import { useState } from "react";
 import { Model, type CompleteEvent, type UploadFilesEvent } from "survey-core";
+import { Survey } from "survey-react-ui";
 
-export default function StoreFiles() {
-  const [view, setView] = useState<View>(null);
-  useMountTask(() => start(setView));
-  return <SurveyJsView view={view} />;
+export default function StoreFiles({ definition }: { definition: Record<string, unknown> }) {
+  // In the definition: { "type": "file", "name": "receipt", "storeDataAsText": false, "allowMultiple": true }
+  const [survey] = useState(() => new Model(definition));   // one model per mount, never per render; the server renders it too
+  useMountTask(() => start(survey));
+  return <Survey model={survey} />;
 }
 
-function start(render: (view: View) => void) {
-  // In the definition: { "type": "file", "name": "receipt", "storeDataAsText": false, "allowMultiple": true }
-  const survey = new Model(getPage().definition);
-
+function start(survey: Model) {
   // #region sjs:store-files.client
   // Upload: your server stores the files and returns an id (or a URL) for each
   survey.onUploadFiles.add(async (_, options) => {
@@ -73,8 +71,13 @@ function start(render: (view: View) => void) {
   };
   survey.onComplete.add(save);
 
-  render({ survey });
-  return demo(survey);
+  const stopDemo = demo(survey);
+  return () => {
+    survey.onComplete.clear();   // the save handler above
+    survey.onUploadFiles.clear();
+    survey.onDownloadFile.clear();
+    stopDemo();
+  };
 }
 
 /** Demo only: what the response would weigh with storeDataAsText: true (computed here, never posted), the notes, Start over. */

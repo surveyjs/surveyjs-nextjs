@@ -41,7 +41,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
         </div>
       }
     >
-      <ValidateResponse />
+      <ValidateResponse definition={data.page.definition} />
     </ExampleLayout>
   );
 }
