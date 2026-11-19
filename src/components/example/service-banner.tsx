@@ -7,7 +7,7 @@ export function ServiceBanner({ name, on }: { name: "VALIDATE_RESPONSES" | "LINT
   return (
     <p className={bannerClass}>
       <strong>{name === "VALIDATE_RESPONSES" ? "Response validation is disabled." : "Form schema checking is disabled."}</strong>
-      {" "}Set <code>{name}=true</code> in <code>.env</code> and restart the app.
+      {" "}Set <code>{name}=true</code> in <code>settings.env</code> and restart the app.
     </p>
   );
 }

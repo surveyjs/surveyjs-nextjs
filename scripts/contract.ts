@@ -73,7 +73,7 @@ try {
     SURVEYJS_BUILD: process.env.SURVEYJS_BUILD ?? "contract",
   };
   delete env.PORT;
-  // The app's own AI settings from .env never leak in: off means off (server.ts keeps what the environment sets)
+  // The app's own AI settings from settings.env and .env never leak in: off means off (server.ts keeps what the environment sets)
   for (const name of ["AI_BASE_URL", "AI_API_KEY", "AI_MODEL", "SURVEYJS_AI_PROVIDER", "SURVEYJS_AI_MODEL", "SURVEYJS_OLLAMA_BASE_URL", "OPENAI_API_KEY", "ANTHROPIC_API_KEY"]) {
     if (ai === "off") env[name] = "";
   }

@@ -29,8 +29,8 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
       description={<p>Extract answers from completed work orders using a predefined form schema. Review the extracted answers alongside the source document, correct any mistakes, and save the response.</p>}
       banner={extractionProvider() === undefined && (
         <p className={bannerClass}>
-          <strong>Document extraction is unavailable.</strong> Configure <code>SURVEYJS_AI_PROVIDER</code> (<code>openai</code>, <code>anthropic</code> or <code>ollama</code>) and its key
-          (<code>OPENAI_API_KEY</code> or <code>ANTHROPIC_API_KEY</code>) or <code>SURVEYJS_OLLAMA_BASE_URL</code> in <code>.env</code>, then restart the app.
+          <strong>Document extraction is unavailable.</strong> Set <code>SURVEYJS_AI_PROVIDER</code> (<code>openai</code>, <code>anthropic</code> or <code>ollama</code>) in <code>settings.env</code>
+          and its key (<code>OPENAI_API_KEY</code> or <code>ANTHROPIC_API_KEY</code>) in <code>.env</code>, or <code>SURVEYJS_OLLAMA_BASE_URL</code> in <code>settings.env</code> for Ollama, then restart the app.
         </p>
       )}
       tryThis={<>

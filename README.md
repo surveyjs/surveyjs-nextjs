@@ -3,7 +3,7 @@
 This is the Next.js code behind [Integrate SurveyJS with Next.js](https://surveyjs.io/documentation/backend-integration-nextjs), as a Next.js 16 App Router application you can run example by example. Each example of that page has a page here that runs the real SurveyJS component against these route handlers, with a short "Try this" list, a live request log, a "What the server stored" panel and the code that just ran. SurveyJS has no backend of its own, so treat these as starting points for your own app.
 
 - SurveyJS demos: [app.demos.surveyjs.io](https://app.demos.surveyjs.io)
-- The same examples for other platforms: [Node.js (Express)](https://github.com/surveyjs/surveyjs-nodejs), [PHP (Laravel)](https://github.com/surveyjs/surveyjs-php-laravel), [ASP.NET Core](https://github.com/surveyjs/surveyjs-aspnet-core), [Python (Flask)](https://github.com/surveyjs/surveyjs-python-flask)
+- The same examples for other platforms: [PHP (Laravel)](https://github.com/surveyjs/surveyjs-php-laravel), [ASP.NET Core](https://github.com/surveyjs/surveyjs-aspnet-core), [Node.js (Express)](https://github.com/surveyjs/surveyjs-nodejs-express), [Python (FastAPI)](https://github.com/surveyjs/surveyjs-python-fastapi), [Java (Spring Boot)](https://github.com/surveyjs/surveyjs-java-spring-boot)
 
 ## Run it
 
@@ -13,7 +13,7 @@ You need Node.js 24 or later, and nothing else: no Docker, no database server, n
 git clone https://github.com/surveyjs/surveyjs-nextjs.git
 cd surveyjs-nextjs
 npm ci            # or npm install
-npm run setup     # creates .env (from .env.example), storage/ and the SQLite database with the demo data
+npm run setup     # creates .env for your private keys (from .env.example), storage/ and the SQLite database with the demo data
 npm run dev       # http://127.0.0.1:8000, Next.js in development mode
 ```
 
@@ -26,9 +26,9 @@ npm start         # http://127.0.0.1:8000, production mode
 
 `npm run dev` and `npm start` both run `node server.ts` (a [custom server](#why-a-custom-server)), which also creates and seeds a missing database, so `npm run setup` only makes the first run explicit. Don't run `next dev` or `next start` directly: they would move to another port on their own if 8000 is busy, and they have no relays.
 
-- In development, Next.js reloads `src/app/` and `src/components/` as you edit them. A change to `server.ts`, `src/server/relay/` or `.env` needs a restart (`Ctrl+C`, then `npm run dev`).
+- In development, Next.js reloads `src/app/` and `src/components/` as you edit them. A change to `server.ts`, `src/server/relay/`, `settings.env` or `.env` needs a restart (`Ctrl+C`, then `npm run dev`).
 - **Fill Forms Together** and **Edit Forms Together** use WebSocket relays that run inside the app, on its port (`/ws/rooms/<id>` and `/ws/forms/<id>`). There is nothing else to start.
-- **Run Server-Side Workflows** (validate, lint, PDF, extract) run inside the app too, with the SurveyJS libraries (see [Server-side workflows in process](#server-side-workflows-in-process)). Set `VALIDATE_RESPONSES=true` and `LINT_DEFINITIONS=true` in `.env` to switch Validate Responses and Lint JSON Schemas on, and an AI provider for Extract Responses from Documents.
+- **Run Server-Side Workflows** (validate, lint, PDF, extract) run inside the app too, with the SurveyJS libraries (see [Server-side workflows in process](#server-side-workflows-in-process)). Set `VALIDATE_RESPONSES=true` and `LINT_DEFINITIONS=true` in `settings.env` to switch Validate Responses and Lint JSON Schemas on, and an AI provider for Extract Responses from Documents (its key goes in `.env`).
 - The tests: `npm test` (`node --test`: the route handlers called with `new Request(…)` and the relays, a few seconds, no browser and no network), `npm run contract` (builds, then runs the shared contract test against a fresh database; `npm run contract -- --smoke` for the smoke test, `-- --no-build` to reuse the last build), `npm run e2e:ci` (the shared Playwright specs and this repo's own, in production mode, after `npm run build`) and `npm run e2e:dev` (the same specs against the development server, which is where React reports its warnings).
 
 `npm run dev` and `npm start` check that nothing answers on the port first, then print the folder they serve, its `<branch>@<commit>` and the mode:
@@ -52,7 +52,7 @@ On Windows:
   node --version
   ```
 
-- npm runs scripts in `cmd`, so `VAR=value npm run dev` doesn't work there (and the scripts never set variables inline: `server.ts` takes `--dev` and `--production`). Set a variable for one run like this, or put it in `.env`:
+- npm runs scripts in `cmd`, so `VAR=value npm run dev` doesn't work there (and the scripts never set variables inline: `server.ts` takes `--dev` and `--production`). Set a variable for one run like this, or put it in `settings.env`:
 
   ```powershell
   $env:APP_PORT=8001; npm run dev
@@ -83,7 +83,7 @@ With Docker, `docker compose down`.
 ### Run a branch or a PR
 
 - Check the branch out in its own folder, with `git worktree add ../surveyjs-nextjs-pr <branch>` (for a pull request, `git fetch origin pull/<number>/head:pr-<number>` first) or a second clone, and run `npm ci` there. `node_modules/`, `.next/`, `.env` and `storage/` belong to each checkout.
-- Run one checkout on the default port at a time: stop the other one first, or start the second with `APP_PORT=8001` (PowerShell: `$env:APP_PORT=8001; npm run dev`), or put `APP_PORT=8001` in its `.env`.
+- Run one checkout on the default port at a time: stop the other one first, or start the second with `APP_PORT=8001` (PowerShell: `$env:APP_PORT=8001; npm run dev`).
 - Next.js runs one development server per folder: a second `npm run dev` in the same checkout stops with Next.js's own "You can access the existing server at …" message, whatever its port. Production copies (`npm start`) can share a checkout on different ports.
 - The page says which checkout answered: "Running `<branch>@<commit>`" under the catalog's footer buttons and at the end of every example's Description panel.
 
@@ -115,7 +115,7 @@ Docker, or any Node.js host with a persistent disk and WebSockets. Not Vercel: t
 
 ## Configuration
 
-`npm run setup` copies `.env.example` to `.env`. `server.ts` loads it with Node's own `process.loadEnvFile()` (no `dotenv`) before it starts Next.js; variables set in the shell win. `src/server/config.ts` reads every setting once, and no other file reads `process.env`. Nothing is `NEXT_PUBLIC_*`: the pages get what they need from the server-rendered page config, so changing a setting needs a restart, never a rebuild. Switches accept `1`, `true`, `on` or `yes`.
+Two files hold the settings. `settings.env` is committed and holds every setting except the private keys. `.env` is git-ignored and holds only the private keys: `SURVEYJS_LICENSE_KEY`, `AI_API_KEY`, `OPENAI_API_KEY` and `ANTHROPIC_API_KEY` (`npm run setup` copies `.env.example` to it). `server.ts` loads both with Node's own `process.loadEnvFile()` (no `dotenv`) before it starts Next.js: variables set in the shell win, then `.env`, then `settings.env`. The Docker image includes `settings.env`, and `docker compose` passes `.env` in. `src/server/config.ts` reads every setting once, and no other file reads `process.env`. Nothing is `NEXT_PUBLIC_*`: the pages get what they need from the server-rendered page config, so changing a setting needs a restart, never a rebuild. Switches accept `1`, `true`, `on` or `yes`.
 
 | Variable | Default | What it does |
 |---|---|---|
@@ -165,7 +165,7 @@ There is no `SURVEYJS_SERVICE_URL`: Run Server-Side Workflows don't call a servi
 
 Each example is a few files you can read on their own. The full explanation is in [the docs](https://surveyjs.io/documentation/backend-integration-nextjs).
 
-- `src/server/routes/<slug>.ts`: the example's logic, the server code the docs show: one exported handler per endpoint, taking the Web `Request` and returning a `Response`. Each file matches [`surveyjs-nodejs`](https://github.com/surveyjs/surveyjs-nodejs)'s `routes/<slug>.js` line by line, with `Response.json(…, { status })` in place of `res.status().json()`.
+- `src/server/routes/<slug>.ts`: the example's logic, the server code the docs show: one exported handler per endpoint, taking the Web `Request` and returning a `Response`. Each file matches [`surveyjs-nodejs-express`](https://github.com/surveyjs/surveyjs-nodejs-express)'s `routes/<slug>.js` line by line, with `Response.json(…, { status })` in place of `res.status().json()`.
 - `src/app/api/**/route.ts`: the paths. Each file only delegates, `export const { GET, POST, … } = methods({ POST: route(saveResponse) })`: `route()` (in `src/server/integration/http.ts`) awaits Next.js's `params`, and answers errors as JSON `{ error }`; `methods()` gives every other method a JSON `405` with `Allow`. `src/app/api/responses/route.ts` and `src/app/api/forms/[id]/route.ts` pick `validate-response.ts` or `save-response.ts`, and `lint-definition.ts` or `creator-load-save.ts`, by the switches. `src/app/api/[...path]/route.ts` answers every unknown `/api` path with a JSON `404`.
 - `src/app/examples/<slug>/page.tsx`: the example's page, a Server Component: its description, the "Try this" list and its controls. `src/app/examples/<slug>/client.tsx`: the example's client code (`"use client"`), the SurveyJS code the docs show in React, ported from `shared/client/<slug>.js` with the same behaviour.
 - `src/server/relay/fill-relay.ts` and `edit-relay.ts`: the relays of Fill Forms Together and Edit Forms Together, with their rooms in `fill-room.ts` and `edit-room.ts`. `src/server/relay/index.ts` attaches them to the custom server's HTTP server.

@@ -15,13 +15,15 @@ if (major < 24) {
   process.exit(1);
 }
 
-// Paths in .env (DATA_DIR) and the repository files the pages read are relative to this folder
+// Paths in settings.env and .env (DATA_DIR) and the repository files the pages read are relative to this folder
 process.chdir(import.meta.dirname);
 
-// .env with Node's own loader, before anything reads the environment; variables set in the shell win.
-// Next.js reads the same file again for its own module graph, and keeps what is already set.
+// .env (the private keys), then settings.env (everything else, committed), with Node's own loader, before anything
+// reads the environment. loadEnvFile() keeps what is already set: the shell wins, then .env, then settings.env.
+// Next.js reads .env again for its own module graph, and keeps what is already set.
 const { existsSync } = await import("node:fs");
 if (existsSync(".env")) process.loadEnvFile(".env");
+if (existsSync("settings.env")) process.loadEnvFile("settings.env");
 
 // The mode comes from the arguments (npm scripts can't set variables inline on Windows), else NODE_ENV
 const dev = process.argv.includes("--dev") || (!process.argv.includes("--production") && process.env.NODE_ENV === "development");

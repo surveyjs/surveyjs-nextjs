@@ -22,7 +22,7 @@ RUN npm ci --omit=dev && npm cache clean --force
 # server.ts runs as it is (Node's type stripping) and imports src/server/; the Code tab reads the example files from
 # src/ at request time, so the image keeps src/; shared/ holds the seed, the definitions and the page files
 COPY --from=build /app/.next ./.next
-COPY server.ts next.config.ts tsconfig.json surveyjs-integration.json ./
+COPY server.ts next.config.ts tsconfig.json surveyjs-integration.json settings.env ./
 COPY src ./src
 COPY shared ./shared
 RUN mkdir -p /app/storage && chown node:node /app/storage
