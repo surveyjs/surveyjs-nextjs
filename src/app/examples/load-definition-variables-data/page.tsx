@@ -62,7 +62,7 @@ export default async function Page({ searchParams, optionA = false }: { searchPa
         <StartOver />
       </>}
     >
-      <LoadDefinitionVariablesData />
+      <LoadDefinitionVariablesData embedded={embedded} />
     </ExampleLayout>
   );
 }

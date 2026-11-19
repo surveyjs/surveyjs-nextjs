@@ -23,7 +23,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
       </>}
       actions={<StartOver />}
     >
-      <ChoicesFromWeb />
+      <ChoicesFromWeb definition={data.page.definition} />
     </ExampleLayout>
   );
 }

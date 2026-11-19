@@ -2,12 +2,9 @@
 // Save Responses: the form and its save call (shared/client/save-response.js in React), and the demo's read-outs.
 import { note, onStored, show } from "@/demo/host";   // first: the requests log wraps fetch before the example runs
 import "@/styles/form.css";
-import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { Model } from "survey-core";
-
-// The form renders in the browser only: SurveyJS numbers its elements as it creates them
-const Survey = dynamic(() => import("survey-react-ui").then((m) => m.Survey), { ssr: false });
+import { Survey } from "survey-react-ui";
 
 // #region sjs:save-response.client
 const definition = {   // Define the form directly in the page - no database needed
@@ -37,7 +34,7 @@ function createSurvey() {
 // #endregion
 
 export default function SaveResponse() {
-  const [survey] = useState(createSurvey);   // one model per mount, never per render
+  const [survey] = useState(createSurvey);   // one model per mount, never per render; the server renders it too
   useEffect(() => demo(survey), [survey]);
   return <Survey model={survey} />;
 }

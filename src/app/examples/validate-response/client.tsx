@@ -1,27 +1,28 @@
 "use client";
 // Validate Responses: the claim form posts to POST /api/responses, which validates the answers against the form
 // schema (shared/client/validate-response.js in React). The demo's buttons send tampered answers past the form.
-import { getPage, note, setStoredQuery } from "@/demo/host";   // first: the requests log wraps fetch before the example runs
+import { note, setStoredQuery } from "@/demo/host";   // first: the requests log wraps fetch before the example runs
 import "@/styles/form.css";
-import { SurveyJsView, type View } from "@/components/example/surveyjs-view";
 import { useMountTask } from "@/lib/use-mount-task";
 import { useState } from "react";
 import { Model, type CompleteEvent } from "survey-core";
+import { Survey } from "survey-react-ui";
 
 /** One entry of the server's errors array (SurveyJS validation errors, serialized). */
 type ValidationError = { path?: unknown; text?: string; message?: string; type?: string; locTextValue?: { values?: { default?: string } } };
 type Answers = Record<string, unknown>;
 
-export default function ValidateResponse() {
-  const [view, setView] = useState<View>(null);
-  useMountTask(() => start(setView));
-  return <SurveyJsView view={view} />;
+export default function ValidateResponse({ definition }: { definition: Record<string, unknown> }) {
+  const [survey] = useState(() => {   // one model per mount, never per render; the server renders it too
+    const model = new Model(definition);
+    model.completeText = "Submit claim";
+    return model;
+  });
+  useMountTask(() => start(survey));
+  return <Survey model={survey} />;
 }
 
-function start(render: (view: View) => void) {
-  const survey = new Model(getPage().definition);
-  survey.completeText = "Submit claim";
-  render({ survey });
+function start(survey: Model) {
   const startOver = document.getElementById("start-over") as HTMLButtonElement;
   const sampleAnswers = document.getElementById("sample-answers") as HTMLButtonElement;
   const tamperButtons = [...document.querySelectorAll<HTMLButtonElement>("[data-tamper]")];

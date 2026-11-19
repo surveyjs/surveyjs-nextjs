@@ -48,7 +48,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
           </Table>
           <p data-show="mapping-status" role="status" aria-live="polite" className="m-0 text-sm text-muted-foreground"></p>
         </section>
-        <div id="form" className="p-4 sm:p-6"><RelationalStorage /></div>
+        <div id="form" className="p-4 sm:p-6"><RelationalStorage definitions={{ v1: data.page.definition, v2: data.page.definitionV2 }} definitionVersion={version} /></div>
       </>}
       templates={
         // TableRow and TableCell's classes, as HTML: a template's rows aren't hydrated

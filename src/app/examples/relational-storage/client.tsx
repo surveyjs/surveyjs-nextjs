@@ -1,12 +1,12 @@
 "use client";
 // Use Relational Storage: the v1 or v2 definition with its dbColumn metadata, saved to POST /api/claims
 // (shared/client/relational-storage.js in React). The demo fills the mapping table and confirms the stored columns.
-import { fill, getPage, note, onStored, setStoredQuery, show } from "@/demo/host";   // first: the requests log wraps fetch before the example runs
+import { fill, note, onStored, setStoredQuery, show } from "@/demo/host";   // first: the requests log wraps fetch before the example runs
 import "@/styles/form.css";
-import { SurveyJsView, type View } from "@/components/example/surveyjs-view";
 import { useMountTask } from "@/lib/use-mount-task";
 import { useState } from "react";
 import type { CompleteEvent } from "survey-core";
+import { Survey } from "survey-react-ui";
 
 type Version = "v1" | "v2";
 type Definitions = Record<Version, Record<string, unknown> | undefined>;
@@ -38,22 +38,19 @@ const saveClaim: SaveClaim = async function saveClaim(data, definitionVersion) {
 };
 // #endregion
 
-export default function RelationalStorage() {
-  const [view, setView] = useState<View>(null);
-  useMountTask(() => start(setView));
-  return <SurveyJsView view={view} />;
+/** Both definitions, and the one ?version picks: the page reads them on the server */
+export default function RelationalStorage({ definitions, definitionVersion }: { definitions: Definitions; definitionVersion: Version }) {
+  const [survey] = useState(() => createSurvey(definitions, definitionVersion));   // one model per mount, never per render; the server renders it too
+  useMountTask(() => start(survey, definitionVersion));
+  return <Survey model={survey} />;
 }
 
 type StoredClaim = { response_id: number; customer_email: unknown; amount: unknown };
 type StoredResponse = { id: number; definition_version: string };
 
-function start(render: (view: View) => void) {
-  const page = getPage();
-  const definitionVersion: Version = new URLSearchParams(location.search).get("version") === "v2" ? "v2" : "v1";
-  const definitions: Definitions = { v1: page.definition, v2: page.definitionV2 };
+function start(survey: Model, definitionVersion: Version) {
   let responseId: number | null = null;
   let awaitingReadback = false;
-  const survey = createSurvey(definitions, definitionVersion);
 
   // Confirm the saved response ID before reporting that its columns were populated
   const save = async (sender: Model, options: CompleteEvent) => {
@@ -76,7 +73,6 @@ function start(render: (view: View) => void) {
     }
   };
   survey.onComplete.add(save);
-  render({ survey });
 
   // Demo only: show the mapping directly from the selected definition
   const mapping = document.getElementById("mapping-rows")!;

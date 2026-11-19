@@ -2,6 +2,7 @@
 // (window.SURVEYJS_PAGE), the Code tab, and the few queries some example pages make (the reference does these in its
 // views' @php blocks). The pages are Server Components in src/app; they call these with pageRequest()
 // (src/lib/page-request.ts), a Web Request built from the page's own headers, so this file stays plain Web code.
+import { setLicenseKey } from "survey-core";
 import { currentUser } from "../auth.ts";
 import config from "../config.ts";
 import { db } from "../db.ts";
@@ -17,6 +18,11 @@ import { LABELS, forPage, userKey } from "./users.ts";
 export const TITLE = "Next.js Backend Integration";
 /** The catalog header, next to the logo */
 export const HEADER = "Step-by-Step Next.js Backend Integration";
+
+// The forms render on the server too, so the licence key applies here before any model renders, as getPage()
+// (src/demo/host.ts) applies it in the browser. survey-core is external (next.config.ts), so the page's client
+// components share this copy.
+if (config.licenseKey) setLicenseKey(config.licenseKey);
 
 /** The four Lato files every page preloads (shared/ui/fonts.css names the family "Lato"). */
 export const FONTS = ["Regular", "Medium", "Semibold", "Bold"].map((weight) => `/shared/ui/fonts/lato/LatoLatin-${weight}.woff2`);
@@ -64,9 +70,10 @@ export type ExampleData = ReturnType<typeof exampleData>;
 
 /** window.SURVEYJS_PAGE: what src/demo/host.ts and the example client components read. */
 export function pageConfig(req: Request, step: Step) {
-  const definitions: Record<string, unknown> = Object.fromEntries(Object.entries(step.files)
+  // Typed for the pages that pass `definition` (and relational-storage's `definitionV2`) to their client component
+  const definitions = Object.fromEntries(Object.entries(step.files)
     .filter(([role]) => role.startsWith("definition"))
-    .map(([role, path]) => [role, readShared(path.replace(/^shared\//, ""))]));
+    .map(([role, path]) => [role, readShared(path.replace(/^shared\//, ""))])) as { definition: Record<string, unknown>; definitionV2?: Record<string, unknown> };
   if (step.slug === "extract-from-paper") {
     const form = db(req).prepare("SELECT json FROM forms WHERE key = 'work-order'").get() as { json: string } | undefined;
     if (!form) throw httpError(404, "Unknown work order form");

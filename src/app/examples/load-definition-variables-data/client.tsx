@@ -1,48 +1,46 @@
 "use client";
 // Load JSON Schemas, Variables, and Answers: the form from the page (Option A) or from the API (Option B)
-// (shared/client/load-definition-variables-data.js in React), and the demo's save and read-outs.
+// (shared/client/load-definition-variables-data.js in React), and the demo's save and read-outs. Option A's form
+// renders on the server: the page passes the schema and variables it embeds as window.FORM_DEFINITION and
+// window.FORM_VARIABLES. Option B's form renders in the browser, once its request answers.
 import { note, onStored, setStoredQuery } from "@/demo/host";   // first: the requests log wraps fetch before the example runs
 import "@/styles/form.css";
 import { useMountTask } from "@/lib/use-mount-task";
-import dynamic from "next/dynamic";
 import { useState } from "react";
 import { Model } from "survey-core";
+import { Survey } from "survey-react-ui";
 
-const Survey = dynamic(() => import("survey-react-ui").then((m) => m.Survey), { ssr: false });
-
-declare global {
-  interface Window {
-    FORM_DEFINITION?: Record<string, unknown>;
-    FORM_VARIABLES?: Record<string, unknown>;
-  }
-}
+type Embedded = { definition: unknown; variables: Record<string, unknown> };
 
 // #region sjs:load-definition-variables-data.client
-async function createSurvey(recordId: string) {
-  if (window.FORM_DEFINITION) {
-    // Option A: Use the schema and user variables embedded in the HTML response
-    const survey = new Model(window.FORM_DEFINITION);
-    survey.setVariables(window.FORM_VARIABLES ?? {});
-    return survey;
-  }
-  // Option B: Load the definition, variables, and previous answers in one request
-  const { definition, variables, data } =
-    await fetch(`/api/forms/claim-request?record=${encodeURIComponent(recordId)}`).then(r => r.json());
+// Option A: Use the schema and user variables embedded in the HTML response
+function createSurvey({ definition, variables }: Embedded) {
   const survey = new Model(definition);
   survey.setVariables(variables);   // Variables are available in expressions such as {user.name} and are excluded from survey.data
-  survey.data = data;               // Restore previously saved answers for editing
+  return survey;
+}
+
+// Option B: Load the definition, variables, and previous answers in one request
+async function loadSurvey(recordId: string) {
+  const { definition, variables, data } =
+    await fetch(`/api/forms/claim-request?record=${encodeURIComponent(recordId)}`).then(r => r.json());
+  const survey = createSurvey({ definition, variables });
+  survey.data = data;   // Restore previously saved answers for editing
   return survey;
 }
 // #endregion
 
-export default function LoadDefinitionVariablesData() {
-  const [survey, setSurvey] = useState<Model | null>(null);
+/** embedded: Option A's schema and variables (GET /claim), else null */
+export default function LoadDefinitionVariablesData({ embedded }: { embedded: Embedded | null }) {
+  // One model per mount, never per render: Option A's on the server too, Option B's once it has loaded
+  const [survey, setSurvey] = useState(() => embedded && createSurvey(embedded));
   useMountTask(async (active) => {
+    if (survey) return demo(survey);
     const recordId = new URLSearchParams(location.search).get("record") ?? "";
-    const created = await createSurvey(recordId);
+    const loaded = await loadSurvey(recordId);
     if (!active()) return;
-    setSurvey(created);
-    return demo(created);
+    setSurvey(loaded);
+    return demo(loaded);
   });
   return survey && <Survey model={survey} />;
 }

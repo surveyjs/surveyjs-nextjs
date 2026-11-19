@@ -1,26 +1,28 @@
 "use client";
 // Extract Responses from Documents: a scan becomes a draft response for review beside its preview, saved only after
 // the reviewer confirms it (shared/client/extract-from-paper.js in React). The form is the stored work-order form.
-import { getPage, note, setStoredQuery, show } from "@/demo/host";   // first: the requests log wraps fetch before the example runs
+import { note, setStoredQuery, show } from "@/demo/host";   // first: the requests log wraps fetch before the example runs
 import "@/styles/form.css";
-import { SurveyJsView, type View } from "@/components/example/surveyjs-view";
 import { responseError } from "@/demo/schema-saver";
 import { useMountTask } from "@/lib/use-mount-task";
 import { useState } from "react";
 import { Model, type CompleteEvent, type CompletingEvent, type ValueChangedEvent } from "survey-core";
+import { Survey } from "survey-react-ui";
 
 type Definition = { pages?: { elements: Record<string, unknown>[] }[]; elements?: Record<string, unknown>[] };
 type Confidence = { fieldName: string; confidence: number; flagged: boolean };
 type ExtractionResult = { answers: Record<string, unknown>; confidence: Confidence[]; uniqueId?: string | null };
 
-export default function ExtractFromPaper() {
-  const [view, setView] = useState<View>(null);
-  useMountTask(() => start(setView));
-  return <SurveyJsView view={view} />;
+/** The stored work-order form, which the page reads on the server */
+export default function ExtractFromPaper({ definition }: { definition: Record<string, unknown> }) {
+  const [survey] = useState(() => createSurvey(definition));   // one model per mount, never per render; the server renders it too
+  useMountTask(() => start(survey));
+  return <Survey model={survey} />;
 }
 
-function start(render: (view: View) => void) {
-  const definition = structuredClone(getPage().definition) as Definition;
+/** The work-order form with the reviewer's confirmation at the end */
+function createSurvey(stored: Record<string, unknown>) {
+  const definition = structuredClone(stored) as Definition;
   const lastPage = definition.pages?.at(-1) ?? definition;
   lastPage.elements ??= [];
   lastPage.elements.push({
@@ -30,8 +32,11 @@ function start(render: (view: View) => void) {
     requiredErrorText: "You need to confirm that you have reviewed the answers."
   });
   const survey = new Model(definition);
-  render({ survey });
   survey.completeText = "Save reviewed response";
+  return survey;
+}
+
+function start(survey: Model) {
   const reviewed = survey.getQuestionByName("review_confirmation");
   const form = document.getElementById("form")!;
   const sample = document.getElementById("sample-scan") as HTMLButtonElement;
@@ -230,6 +235,7 @@ function start(render: (view: View) => void) {
   ownScan.addEventListener("change", chosen);
   startOver.addEventListener("click", restart);
   window.addEventListener("pagehide", leave);
+  if (ownScan.files?.length) chosen();   // a document chosen while the server-rendered page was still hydrating
 
   return () => {
     revision++;
@@ -241,6 +247,6 @@ function start(render: (view: View) => void) {
     leave();
     survey.onValueChanged.remove(valueChanged);
     survey.onCompleting.remove(completing);
-    survey.onComplete.clear();   // the save handler above; the model is discarded with the component
+    survey.onComplete.clear();   // the save handler above
   };
 }

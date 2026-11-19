@@ -69,7 +69,7 @@ export default async function Page({ searchParams }: { searchParams: SearchParam
             <iframe id="scan-pdf" title="Uploaded work order PDF" hidden className="h-[640px] w-full rounded border"></iframe>
           </div>
           <div id="form" className="min-w-0 p-4 sm:p-6">
-            <ExtractFromPaper />
+            <ExtractFromPaper definition={data.page.definition} />
           </div>
         </div>
       </>}
