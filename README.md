@@ -3,6 +3,7 @@
 This is the Next.js code behind [Integrate SurveyJS with Next.js](https://surveyjs.io/documentation/backend-integration-nextjs), as a Next.js 16 App Router application you can run example by example. Each example of that page has a page here that runs the real SurveyJS component against these route handlers, with a short "Try this" list, a live request log, a "What the server stored" panel and the code that just ran. SurveyJS has no backend of its own, so treat these as starting points for your own app.
 
 - SurveyJS demos: [app.demos.surveyjs.io](https://app.demos.surveyjs.io)
+- Backend integration examples on the SurveyJS website: [surveyjs.io/backend-integration/examples](https://surveyjs.io/backend-integration/examples)
 - The same examples for other platforms: [PHP (Laravel)](https://github.com/surveyjs/surveyjs-php-laravel), [ASP.NET Core](https://github.com/surveyjs/surveyjs-aspnet-core), [Node.js (Express)](https://github.com/surveyjs/surveyjs-nodejs-express), [Python (FastAPI)](https://github.com/surveyjs/surveyjs-python-fastapi), [Java (Spring Boot)](https://github.com/surveyjs/surveyjs-java-spring-boot)
 
 ## Run it
